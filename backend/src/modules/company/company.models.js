@@ -15,7 +15,7 @@ const companySchema = new mongoose.Schema(
       type: String,
     },
     logo: {
-      type: String, // URL comes from cloudinary
+      type: String,
     },
   },
   {

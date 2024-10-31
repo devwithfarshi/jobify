@@ -31,7 +31,7 @@ app.use(allMiddlewares);
 //base route
 app.get("/", (_, res) => {
   res.status(StatusCodes.CREATED).json({
-    message: "Welcome to the Sotto-Jachai API😀",
+    message: "Welcome to the Jobify API😀",
     status: "Success✅",
     server_status: "Working🆙",
     server_time: `${new Date().toLocaleString()}⌛`,
