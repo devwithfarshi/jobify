@@ -4,10 +4,16 @@ const { StatusCodes } = require("http-status-codes");
 const ApiError = require("@/utils/apiError");
 
 const getAllUsers = async (req, res, next) => {
-  const { page, limit, name, email } = req.query;
+  const { page, limit, name, email, search } = req.query;
   let query = {};
   if (name) query.name = { $regex: name, $options: "i" };
   if (email) query.email = { $regex: email, $options: "i" };
+  if (search)
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+
   try {
     const users = await userServices.getAllUsers(query, {
       page,

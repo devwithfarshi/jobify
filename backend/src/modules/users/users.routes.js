@@ -5,10 +5,12 @@ const authenticate = require("@/middlewares/auth.middleware");
 const authorizeRole = require("@/middlewares/authorizeRole.middleware");
 const { superAdmin, admin } = require("@/config/constant");
 const userController = require("./users.controller");
+const userValidation = require("./users.validation");
 router.get(
   "/",
   authenticate,
   authorizeRole(superAdmin),
+  validate(userValidation.searchUserValidation),
   userController.getAllUsers
 );
 router.get(

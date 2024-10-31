@@ -7,7 +7,11 @@ const validate = require("@/middlewares/validation.middleware");
 const jobController = require("./job.controller");
 const JobValidation = require("./job.validation");
 
-router.get("/", jobController.getAllJobs);
+router.get(
+  "/",
+  validate(JobValidation.jobSearchValidation),
+  jobController.getAllJobs
+);
 router.get("/:id", jobController.getJob);
 
 router.use([authenticate, authorizeRole([superAdmin, admin])]);

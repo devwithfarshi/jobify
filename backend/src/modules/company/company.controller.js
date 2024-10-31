@@ -27,12 +27,16 @@ const createCompany = async (req, res, next) => {
 };
 
 const getAllCompanies = async (req, res, next) => {
-  const { page, limit } = req.query;
+  const { page, limit, name, location, website } = req.query;
+  let query = {};
+  if (name) query.name = { $regex: name, $options: "i" };
+  if (location) query.location = { $regex: location, $options: "i" };
+  if (website) query.website = { $regex: website, $options: "i" };
   try {
-    const companies = await companyServices.getAllCompanies(
-      {},
-      { page, limit }
-    );
+    const companies = await companyServices.getAllCompanies(query, {
+      page,
+      limit,
+    });
     return res
       .status(StatusCodes.OK)
       .json(

@@ -24,7 +24,17 @@ const jobUpdateValidation = {
   }),
 };
 
+const jobSearchValidation = {
+  query: Joi.object().keys({
+    page: Joi.number().optional(),
+    limit: Joi.number().optional(),
+    location: Joi.string().optional(),
+    title: Joi.string().optional(),
+  }),
+};
+
 module.exports = {
   jobCreateValidation,
   jobUpdateValidation,
+  jobSearchValidation,
 };

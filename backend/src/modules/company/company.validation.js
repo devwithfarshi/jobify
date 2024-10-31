@@ -18,7 +18,18 @@ const updateCompany = {
   }),
 };
 
+const searchCompany = {
+  query: Joi.object().keys({
+    page: Joi.number().optional(),
+    limit: Joi.number().optional(),
+    name: Joi.string().optional(),
+    location: Joi.string().optional(),
+    website: Joi.string().optional(),
+  }),
+};
+
 module.exports = {
   createCompany,
   updateCompany,
+  searchCompany,
 };

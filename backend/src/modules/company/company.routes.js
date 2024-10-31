@@ -17,7 +17,10 @@ router
     validate(companyValidation.createCompany),
     companyController.createCompany
   )
-  .get(companyController.getAllCompanies);
+  .get(
+    validate(companyValidation.searchCompany),
+    companyController.getAllCompanies
+  );
 router
   .route("/:id")
   .get(companyController.getCompany)
