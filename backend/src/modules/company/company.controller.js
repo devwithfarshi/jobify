@@ -3,12 +3,13 @@ const companyServices = require("./company.services");
 const ApiResponse = require("@/utils/apiResponse");
 const { uploadFile } = require("@/utils/upload");
 const ApiError = require("@/utils/apiError");
-
+const fs = require("fs");
 const createCompany = async (req, res, next) => {
   try {
     console.log(req.file);
     const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (allowedMimeTypes.indexOf(req.file.mimetype) === -1) {
+      fs.unlinkSync(req.file.path);
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json(

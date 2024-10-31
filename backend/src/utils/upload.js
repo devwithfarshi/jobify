@@ -8,11 +8,15 @@ const fs = require("fs");
  */
 const uploadFile = (filePath, options = {}) => {
   const result = cloudinary.uploader.upload(filePath, options);
-  return result.then((response) => {
-    console.log(response);
-    fs.unlinkSync(filePath);
-    return response;
-  });
+  return result
+    .then((response) => {
+      fs.unlinkSync(filePath);
+      return response;
+    })
+    .catch((error) => {
+      fs.unlinkSync(filePath);
+      throw error;
+    });
 };
 
 /**

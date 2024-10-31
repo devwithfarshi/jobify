@@ -6,13 +6,12 @@ const fs = require("fs");
 // Define the path for the uploads directory
 const uploadsDir = join(__dirname, "..", "public", "uploads");
 
-// Check if the uploads directory exists, if not, create it
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
 const storage = diskStorage({
   destination: function (req, file, cb) {
+    // Check if the uploads directory exists, if not, create it
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
     cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
