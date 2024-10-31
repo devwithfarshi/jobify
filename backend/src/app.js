@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
+const redis = require("./config/redis");
 
 const mongoSanitize = require("express-mongo-sanitize");
 const { errorHandler, notFoundHandler } = require("./utils/errorHandler");
