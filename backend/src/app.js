@@ -5,6 +5,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
+
 const mongoSanitize = require("express-mongo-sanitize");
 const { errorHandler, notFoundHandler } = require("./utils/errorHandler");
 const { StatusCodes } = require("http-status-codes");
@@ -21,6 +23,7 @@ const allMiddlewares = [
   hpp(),
   express.json(),
   express.urlencoded({ extended: true }),
+  cookieParser(),
   cors(),
 ];
 app.use(allMiddlewares);

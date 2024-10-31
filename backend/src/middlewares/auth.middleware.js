@@ -22,7 +22,6 @@ function extractToken(req) {
 
 const authenticate = (req, res, next) => {
   const tokenRaw = extractToken(req);
-
   if (!tokenRaw) {
     return next(new ApiError(401, "Access denied. No token provided"));
   }

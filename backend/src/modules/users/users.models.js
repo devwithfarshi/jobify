@@ -5,7 +5,10 @@ const userSchema = new mongoose.Schema(
   {
     name: String,
     password: String,
-    email: String,
+    email: {
+      type: String,
+      set: (val) => val.toLowerCase(),
+    },
     role: String,
   },
   {
