@@ -3,7 +3,7 @@ const router = express.Router();
 const validate = require("@/middlewares/validation.middleware");
 const authenticate = require("@/middlewares/auth.middleware");
 const authorizeRole = require("@/middlewares/authorizeRole.middleware");
-const { superAdmin } = require("@/config/constant");
+const { superAdmin, admin } = require("@/config/constant");
 const userController = require("./users.controller");
 router.get(
   "/",
