@@ -2,9 +2,17 @@ const { StatusCodes } = require("http-status-codes");
 const companyServices = require("./company.services");
 const ApiResponse = require("@/utils/apiResponse");
 const { uploadFile } = require("@/utils/upload");
+const ApiError = require("@/utils/apiError");
 
 const createCompany = async (req, res, next) => {
   try {
+    console.log(req.file);
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (allowedMimeTypes.indexOf(req.file.mimetype) === -1) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(new ApiError(StatusCodes.BAD_REQUEST, "Invalid file type"));
+    }
     const fileUploadResponse = await uploadFile(req.file.path, {
       resource_type: "image",
     });
