@@ -27,8 +27,12 @@ const createCompany = async (req, res, next) => {
 };
 
 const getAllCompanies = async (req, res, next) => {
+  const { page, limit } = req.query;
   try {
-    const companies = await companyServices.getAllCompanies();
+    const companies = await companyServices.getAllCompanies(
+      {},
+      { page, limit }
+    );
     return res
       .status(StatusCodes.OK)
       .json(

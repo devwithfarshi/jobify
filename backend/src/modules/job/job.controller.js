@@ -1,8 +1,16 @@
 const ApiResponse = require("@/utils/apiResponse");
 const jobServices = require("./job.services");
+const companyServices = require("../company/company.services");
 const { StatusCodes } = require("http-status-codes");
+const ApiError = require("@/utils/apiError");
 const createJob = async (req, res, next) => {
   try {
+    const companyExits = await companyServices.getCompany(req.body.company);
+    if (!companyExits) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json(new ApiError(StatusCodes.NOT_FOUND, "Company not found"));
+    }
     const job = await jobServices.createJob(req.body);
     return res
       .status(StatusCodes.CREATED)
@@ -14,8 +22,9 @@ const createJob = async (req, res, next) => {
   }
 };
 const getAllJobs = async (req, res, next) => {
+  const { page, limit } = req.query;
   try {
-    const jobs = await jobServices.getAllJobs();
+    const jobs = await jobServices.getAllJobs({}, { page, limit });
     return res
       .status(StatusCodes.OK)
       .json(

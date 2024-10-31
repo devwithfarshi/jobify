@@ -1,8 +1,8 @@
 const jobModels = require("./job.models");
 
-const getAllJobs = async () => {
+const getAllJobs = async (query, paginateOptions) => {
   try {
-    const jobs = await jobModels.find();
+    const jobs = await jobModels.paginate(query, paginateOptions);
     return jobs;
   } catch (error) {
     throw error;

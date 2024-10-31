@@ -1,8 +1,8 @@
 const companyModel = require("./company.models");
 const jobServices = require("../job/job.services");
-const getAllCompanies = async () => {
+const getAllCompanies = async (query, paginateOptions) => {
   try {
-    const companies = await companyModel.find();
+    const companies = await companyModel.paginate(query, paginateOptions);
     return companies;
   } catch (error) {
     throw error;

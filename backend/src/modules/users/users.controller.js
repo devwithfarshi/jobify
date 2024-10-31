@@ -4,8 +4,16 @@ const { StatusCodes } = require("http-status-codes");
 const ApiError = require("@/utils/apiError");
 
 const getAllUsers = async (req, res, next) => {
+  const { page, limit, name, email } = req.query;
+  let query = {};
+  if (name) query.name = { $regex: name, $options: "i" };
+  if (email) query.email = { $regex: email, $options: "i" };
   try {
-    const users = await userServices.getAllUsers();
+    const users = await userServices.getAllUsers(query, {
+      page,
+      limit,
+      select: "-password -__v",
+    });
     return res.json(
       new ApiResponse(StatusCodes.OK, users, "All users retrieved successfully")
     );

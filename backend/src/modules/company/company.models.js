@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const paginate = require("mongoose-paginate-v2");
 const companySchema = new mongoose.Schema(
   {
     name: {
@@ -22,5 +22,7 @@ const companySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+companySchema.plugin(paginate);
 
 module.exports = mongoose.model("company", companySchema);

@@ -14,29 +14,14 @@ const createUser = async (userBody) => {
   }
 };
 
-/**
- * Gets all users.
- *
- * @returns {Promise<Object[]>} A promise that resolves to an array of users.
- */
-const getAllUsers = async () => {
+const getAllUsers = async (query, pageOptions) => {
   try {
-    return await userModel.find().select("-password -__v");
+    return await userModel.paginate(query, pageOptions);
   } catch (error) {
     throw error;
   }
 };
 
-/**
- * Retrieves a user based on various criteria.
- *
- * @param {Object} body - The search criteria.
- * @param {string} [body.id] - The user's id.
- * @param {string} [body.email] - The user's email.
- * @param {string} [body.phone] - The user's phone number.
- * @param {string} [body.googleId] - The user's Google ID.
- * @returns {Promise<Object>} A promise that resolves to the user if found.
- */
 const getUnprotectedUser = async (body) => {
   try {
     const { id, email } = body;
@@ -50,12 +35,6 @@ const getUnprotectedUser = async (body) => {
   }
 };
 
-/**
- * Retrieves a user by their ID.
- *
- * @param {string} id - The ID of the user.
- * @returns {Promise<Object>} A promise that resolves to the user if found.
- */
 const getUserById = async (id) => {
   try {
     return await userModel.findById(id).select("-password -__v");
@@ -64,12 +43,6 @@ const getUserById = async (id) => {
   }
 };
 
-/**
- * Retrieves a user by their email.
- *
- * @param {string} email - The email of the user.
- * @returns {Promise<Object>} A promise that resolves to the user if found.
- */
 const getUserByEmail = async (email) => {
   try {
     return await userModel.findOne({ email }).select("-password -__v");
@@ -78,13 +51,6 @@ const getUserByEmail = async (email) => {
   }
 };
 
-/**
- * Updates a user by their ID.
- *
- * @param {string} userId - The ID of the user.
- * @param {Object} updateBody - The data to update.
- * @returns {Promise<Object>} A promise that resolves to the updated user.
- */
 const updateUserById = async (userId, updateBody) => {
   try {
     const user = await userModel.findByIdAndUpdate(userId, updateBody, {
@@ -99,12 +65,6 @@ const updateUserById = async (userId, updateBody) => {
   }
 };
 
-/**
- * Deletes a user by their ID.
- *
- * @param {string} userId - The ID of the user.
- * @returns {Promise<Object>} A promise that resolves to the deleted user.
- */
 const deleteUserById = async (userId) => {
   try {
     const user = await userModel.findByIdAndDelete(userId);
