@@ -41,6 +41,7 @@ app.get("/", (_, res) => {
 const baseApi = "/api/v1";
 app.use(`${baseApi}/auth`, require("./modules/auth/auth.routes"));
 app.use(`${baseApi}/user`, require("./modules/users/users.routes"));
+app.use(`${baseApi}/companies`, require("./modules/company/company.routes"));
 
 // Error handling middleware
 app.use(notFoundHandler);
