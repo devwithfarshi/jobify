@@ -22,13 +22,31 @@ const createJob = async (req, res, next) => {
   }
 };
 const getAllJobs = async (req, res, next) => {
-  const { page, limit, location, title, search } = req.query;
+  const {
+    page,
+    limit,
+    location,
+    title,
+    search,
+    jobType,
+    experienceLevel,
+    remote,
+    industry,
+  } = req.query;
+
   let query = {};
+
   if (location) query.location = { $regex: location, $options: "i" };
   if (title) query.title = { $regex: title, $options: "i" };
   if (search) query.title = { $regex: search, $options: "i" };
+  if (jobType) query.jobType = jobType;
+  if (experienceLevel) query.experienceLevel = experienceLevel;
+  if (remote) query.remote = remote === true;
+  if (industry) query.industry = { $regex: industry, $options: "i" };
+
   try {
     const jobs = await jobServices.getAllJobs(query, { page, limit });
+
     return res
       .status(StatusCodes.OK)
       .json(

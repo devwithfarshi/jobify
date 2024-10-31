@@ -2,17 +2,39 @@ const mongoose = require("mongoose");
 const paginate = require("mongoose-paginate-v2");
 const jobSchema = new mongoose.Schema(
   {
-    title: String,
-    description: String,
-    salary: String,
-    location: String,
+    title: {
+      type: String,
+      trim: true,
+    },
+    description: {
+      type: String,
+    },
+    salary: {
+      type: String,
+      trim: true,
+    },
+    location: {
+      type: String,
+      index: true,
+    },
     company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "company",
-      required: true,
     },
     requirements: [String],
     applyLink: String,
+    jobType: {
+      type: String,
+    },
+    experienceLevel: String,
+    industry: {
+      type: String, // E.g., 'IT', 'Finance', 'Healthcare'
+    },
+    remote: {
+      type: Boolean,
+      default: false,
+    },
+    skills: [String],
   },
   {
     timestamps: true,
