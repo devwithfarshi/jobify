@@ -26,4 +26,11 @@ router.put(
   jobController.updateJob
 );
 router.delete("/:id", jobController.deleteJob);
+
+// AI route
+router.post(
+  "/generate-description",
+  validate(JobValidation.generateDescription),
+  jobController.generateJobDescription
+);
 module.exports = router;

@@ -11,7 +11,12 @@ const createCompany = async (req, res, next) => {
     if (allowedMimeTypes.indexOf(req.file.mimetype) === -1) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json(new ApiError(StatusCodes.BAD_REQUEST, "Invalid file type"));
+        .json(
+          new ApiError(
+            StatusCodes.BAD_REQUEST,
+            "Only jpeg, jpg and png files are allowed"
+          )
+        );
     }
     const fileUploadResponse = await uploadFile(req.file.path, {
       resource_type: "image",

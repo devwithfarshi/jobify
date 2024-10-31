@@ -4,6 +4,7 @@ const companyServices = require("../company/company.services");
 const { StatusCodes } = require("http-status-codes");
 const ApiError = require("@/utils/apiError");
 const redis = require("@/config/redis");
+const { generateJobDescriptionWithOpenAi } = require("@/utils/openAi");
 
 const createJob = async (req, res, next) => {
   try {
@@ -129,10 +130,34 @@ const deleteJob = async (req, res, next) => {
   }
 };
 
+const generateJobDescription = async (req, res, next) => {
+  try {
+    const { companyName, jobTitle, industry, skills } = req.body;
+    const description = await generateJobDescriptionWithOpenAi(
+      companyName,
+      jobTitle,
+      industry,
+      skills
+    );
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          { description },
+          "Job description generated successfully"
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createJob,
   getAllJobs,
   getJob,
   updateJob,
   deleteJob,
+  generateJobDescription,
 };

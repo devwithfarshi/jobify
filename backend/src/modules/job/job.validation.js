@@ -56,8 +56,17 @@ const jobSearchValidation = {
   }),
 };
 
+const generateDescription = {
+  body: Joi.object().keys({
+    jobTitle: Joi.string().required(),
+    industry: Joi.string().required(),
+    skills: Joi.array().items(Joi.string()).required(),
+    companyName: Joi.string().required(),
+  }),
+};
 module.exports = {
   jobCreateValidation,
   jobUpdateValidation,
   jobSearchValidation,
+  generateDescription,
 };
