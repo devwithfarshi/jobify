@@ -1,5 +1,5 @@
 const companyModel = require("./company.models");
-
+const jobServices = require("../job/job.services");
 const getAllCompanies = async () => {
   try {
     const companies = await companyModel.find();
@@ -31,7 +31,9 @@ const updateCompany = async (id, body) => {
 
 const deleteCompany = async (id) => {
   try {
-    return await companyModel.findByIdAndDelete(id);
+    await companyModel.findByIdAndDelete(id);
+    await jobServices.deleteJobsByCompany(id);
+    return true;
   } catch (error) {
     throw error;
   }

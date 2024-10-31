@@ -85,15 +85,11 @@ const updateCompany = async (req, res, next) => {
 
 const deleteCompany = async (req, res, next) => {
   try {
-    const company = await companyServices.deleteCompany(req.params.id);
+    await companyServices.deleteCompany(req.params.id);
     return res
       .status(StatusCodes.OK)
       .json(
-        new ApiResponse(
-          StatusCodes.OK,
-          { _id: company._id },
-          "Company deleted successfully"
-        )
+        new ApiResponse(StatusCodes.OK, null, "Company deleted successfully")
       );
   } catch (error) {
     next(error);

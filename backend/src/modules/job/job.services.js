@@ -37,6 +37,14 @@ const deleteJob = async (id) => {
   }
 };
 
+const deleteJobsByCompany = async (companyID) => {
+  try {
+    return await jobModels.deleteMany({ company: companyID });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getJob = async (id) => {
   try {
     const job = await jobModels.findById(id);
@@ -52,4 +60,5 @@ module.exports = {
   updateJob,
   deleteJob,
   getJob,
+  deleteJobsByCompany,
 };
