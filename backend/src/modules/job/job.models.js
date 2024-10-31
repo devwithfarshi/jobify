@@ -1,32 +1,18 @@
-// models/Job.js
 const mongoose = require("mongoose");
 
 const jobSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-    },
-    salary: {
-      type: String,
-    },
-    location: {
-      type: String,
-    },
+    title: String,
+    description: String,
+    salary: String,
+    location: String,
     company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "company",
       required: true,
     },
-    requirements: {
-      type: [String],
-    },
-    applyLink: {
-      type: String,
-    },
+    requirements: [String],
+    applyLink: String,
   },
   {
     timestamps: true,
