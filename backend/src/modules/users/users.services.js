@@ -87,7 +87,13 @@ const getUserByEmail = async (email) => {
  */
 const updateUserById = async (userId, updateBody) => {
   try {
-    return await userModel.findByIdAndUpdate(userId, updateBody, { new: true });
+    const user = await userModel.findByIdAndUpdate(userId, updateBody, {
+      new: true,
+    });
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+    }
+    return user;
   } catch (error) {
     throw error;
   }
@@ -101,7 +107,11 @@ const updateUserById = async (userId, updateBody) => {
  */
 const deleteUserById = async (userId) => {
   try {
-    return await userModel.findByIdAndDelete(userId);
+    const user = await userModel.findByIdAndDelete(userId);
+    if (!user) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+    }
+    return user;
   } catch (error) {
     throw error;
   }

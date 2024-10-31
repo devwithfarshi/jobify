@@ -1,5 +1,6 @@
 //  Middleware to authenticate user by verifying token
 
+const { StatusCodes } = require("http-status-codes");
 const ApiError = require("../utils/apiError");
 const { verifyAccessToken } = require("../utils/jwtToken");
 
@@ -23,7 +24,9 @@ function extractToken(req) {
 const authenticate = (req, res, next) => {
   const tokenRaw = extractToken(req);
   if (!tokenRaw) {
-    return next(new ApiError(401, "Access denied. No token provided"));
+    return next(
+      new ApiError(StatusCodes.UNAUTHORIZED, "Access denied. No token provided")
+    );
   }
 
   try {
@@ -31,7 +34,9 @@ const authenticate = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    return next(new ApiError(401, "Invalid token"));
+    return next(
+      new ApiError(StatusCodes.UNAUTHORIZED, "Invalid or expire token")
+    );
   }
 };
 
