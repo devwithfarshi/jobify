@@ -28,8 +28,8 @@ const createJob = async (req, res, next) => {
 
 const getAllJobs = async (req, res, next) => {
   const {
-    page,
-    limit,
+    page = 1,
+    limit = 10,
     location,
     title,
     search,
@@ -39,39 +39,50 @@ const getAllJobs = async (req, res, next) => {
     industry,
   } = req.query;
 
-  let query = {};
-
-  if (location) query.location = { $regex: location, $options: "i" };
-  if (title) query.title = { $regex: title, $options: "i" };
-  if (search) query.title = { $regex: search, $options: "i" };
+  const query = {};
+  if (location) query.location = new RegExp(location, "i");
+  if (title) query.title = new RegExp(title, "i");
+  if (search) query.title = new RegExp(search, "i");
   if (jobType) query.jobType = jobType;
   if (experienceLevel) query.experienceLevel = experienceLevel;
-  if (remote) query.remote = remote === true;
-  if (industry) query.industry = { $regex: industry, $options: "i" };
+  if (remote) query.remote = remote === "true";
+  if (industry) query.industry = new RegExp(industry, "i");
+
+  const cacheKey = `jobs:${JSON.stringify(query)}:${page}:${limit}`;
 
   try {
-    const cachedJobs = await redis.get("jobs");
-    console.log(cachedJobs);
+    const cachedJobs = await redis.get(cacheKey);
+
     if (cachedJobs) {
       const jobs = JSON.parse(cachedJobs);
       return res
         .status(StatusCodes.OK)
         .json(
-          new ApiResponse(StatusCodes.OK, jobs, "Jobs retrieved successfully")
-        );
-    } else {
-      const jobs = await jobServices.getAllJobs(query, {
-        page,
-        limit,
-        populate: "company",
-      });
-      await redis.set("jobs", JSON.stringify(jobs));
-      return res
-        .status(StatusCodes.OK)
-        .json(
-          new ApiResponse(StatusCodes.OK, jobs, "Jobs retrieved successfully")
+          new ApiResponse(
+            StatusCodes.OK,
+            jobs,
+            "Jobs retrieved from cache successfully"
+          )
         );
     }
+
+    const jobs = await jobServices.getAllJobs(query, {
+      page,
+      limit,
+      populate: "company",
+    });
+
+    await redis.set(cacheKey, JSON.stringify(jobs), "EX", 300);
+
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          jobs,
+          "Jobs retrieved from database successfully"
+        )
+      );
   } catch (error) {
     next(error);
   }
