@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const { errorHandler, notFoundHandler } = require("./utils/errorHandler");
-
+const { StatusCodes } = require("http-status-codes");
 const app = express();
 //Middlewares
 const allMiddlewares = [
@@ -26,13 +26,17 @@ const allMiddlewares = [
 app.use(allMiddlewares);
 //base route
 app.get("/", (_, res) => {
-  res.json({
+  res.status(StatusCodes.CREATED).json({
     message: "Welcome to the Sotto-Jachai API😀",
     status: "Success✅",
     server_status: "Working🆙",
     server_time: `${new Date().toLocaleString()}⌛`,
   });
 });
+
+// Routes
+const baseApi = "/api/v1";
+app.use(`${baseApi}/auth`, require("./modules/auth/auth.routes"));
 
 // Error handling middleware
 app.use(notFoundHandler);

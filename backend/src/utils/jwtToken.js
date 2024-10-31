@@ -1,6 +1,6 @@
 // - npm packages
 const jwt = require("jsonwebtoken");
-const jwtConfig = require("../config/jwt");
+const jwtConfig = require("../config/jwt.js");
 
 /**
  * Generates a JWT token for a given user.
