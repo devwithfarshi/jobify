@@ -6,6 +6,26 @@ const ApiError = require("@/utils/apiError");
 const redis = require("@/config/redis");
 const { generateJobDescriptionWithOpenAi } = require("@/utils/openAi");
 
+// Utility function for setting Redis cache
+const setRedisCache = async (key, value, expiration = 300) => {
+  try {
+    await redis.set(key, JSON.stringify(value), "EX", expiration);
+  } catch (error) {
+    console.error(`Error setting cache for ${key}:`, error);
+  }
+};
+
+// Utility function for getting Redis cache
+const getRedisCache = async (key) => {
+  try {
+    const cachedValue = await redis.get(key);
+    return cachedValue ? JSON.parse(cachedValue) : null;
+  } catch (error) {
+    console.error(`Error getting cache for ${key}:`, error);
+    return null;
+  }
+};
+
 const createJob = async (req, res, next) => {
   try {
     const companyExists = await companyServices.getCompany(req.body.company);
@@ -40,7 +60,6 @@ const getAllJobs = async (req, res, next) => {
   } = req.query;
 
   const query = {};
-
   if (title) query.title = { $regex: title, $options: "i" };
   if (jobType) query.jobType = jobType;
   if (experienceLevel) query.experienceLevel = experienceLevel;
@@ -52,16 +71,14 @@ const getAllJobs = async (req, res, next) => {
   const cacheKey = `jobs:${JSON.stringify(query)}:${page}:${limit}`;
 
   try {
-    const cachedJobs = await redis.get(cacheKey);
-
+    const cachedJobs = await getRedisCache(cacheKey);
     if (cachedJobs) {
-      const jobs = JSON.parse(cachedJobs);
       return res
         .status(StatusCodes.OK)
         .json(
           new ApiResponse(
             StatusCodes.OK,
-            jobs,
+            cachedJobs,
             "Jobs retrieved from cache successfully"
           )
         );
@@ -72,8 +89,7 @@ const getAllJobs = async (req, res, next) => {
       limit,
       populate: "company",
     });
-
-    await redis.set(cacheKey, JSON.stringify(jobs), "EX", 300);
+    await setRedisCache(cacheKey, jobs);
 
     return res
       .status(StatusCodes.OK)
@@ -91,17 +107,22 @@ const getAllJobs = async (req, res, next) => {
 
 const getJob = async (req, res, next) => {
   try {
-    const cachedJob = await redis.get(`job:${req.params.id}`);
+    const cachedJob = await getRedisCache(`job:${req.params.id}`);
     if (cachedJob) {
-      const job = JSON.parse(cachedJob);
       return res
         .status(StatusCodes.OK)
         .json(
-          new ApiResponse(StatusCodes.OK, job, "Job retrieved successfully")
+          new ApiResponse(
+            StatusCodes.OK,
+            cachedJob,
+            "Job retrieved successfully"
+          )
         );
     }
+
     const job = await jobServices.getJob(req.params.id);
-    await redis.set(`job:${req.params.id}`, JSON.stringify(job));
+    await setRedisCache(`job:${req.params.id}`, job);
+
     return res
       .status(StatusCodes.OK)
       .json(new ApiResponse(StatusCodes.OK, job, "Job retrieved successfully"));
@@ -133,7 +154,7 @@ const deleteJob = async (req, res, next) => {
       .json(
         new ApiResponse(
           StatusCodes.NO_CONTENT,
-          { _id: job._id },
+          { _id: req.params.id },
           "Job deleted successfully"
         )
       );
@@ -166,8 +187,26 @@ const generateJobDescription = async (req, res, next) => {
 };
 
 const getAllLocations = async (req, res, next) => {
+  const cacheKey = "locations";
   try {
+    // Check if data is in cache
+    const cachedLocations = await redis.get(cacheKey);
+    if (cachedLocations) {
+      const locations = JSON.parse(cachedLocations);
+      return res
+        .status(StatusCodes.OK)
+        .json(
+          new ApiResponse(
+            StatusCodes.OK,
+            locations,
+            "Locations retrieved from cache successfully"
+          )
+        );
+    }
+
     const locations = await jobServices.getAllLocations();
+    await redis.set(cacheKey, JSON.stringify(locations), "EX", 300);
+
     return res
       .status(StatusCodes.OK)
       .json(
@@ -183,8 +222,26 @@ const getAllLocations = async (req, res, next) => {
 };
 
 const getAllJobTypes = async (req, res, next) => {
+  const cacheKey = "jobTypes";
   try {
+    // Check if data is in cache
+    const cachedJobTypes = await redis.get(cacheKey);
+    if (cachedJobTypes) {
+      const jobTypes = JSON.parse(cachedJobTypes);
+      return res
+        .status(StatusCodes.OK)
+        .json(
+          new ApiResponse(
+            StatusCodes.OK,
+            jobTypes,
+            "Job Types retrieved from cache successfully"
+          )
+        );
+    }
+
     const jobTypes = await jobServices.getAllJobTypes();
+    await redis.set(cacheKey, JSON.stringify(jobTypes), "EX", 300);
+
     return res
       .status(StatusCodes.OK)
       .json(
@@ -200,8 +257,26 @@ const getAllJobTypes = async (req, res, next) => {
 };
 
 const getAllExperienceLevel = async (req, res, next) => {
+  const cacheKey = "experienceLevels";
   try {
+    // Check if data is in cache
+    const cachedExperienceLevels = await redis.get(cacheKey);
+    if (cachedExperienceLevels) {
+      const experienceLevels = JSON.parse(cachedExperienceLevels);
+      return res
+        .status(StatusCodes.OK)
+        .json(
+          new ApiResponse(
+            StatusCodes.OK,
+            experienceLevels,
+            "Experience Levels retrieved from cache successfully"
+          )
+        );
+    }
+
     const experienceLevels = await jobServices.getAllExperienceLevel();
+    await redis.set(cacheKey, JSON.stringify(experienceLevels), "EX", 300);
+
     return res
       .status(StatusCodes.OK)
       .json(
@@ -217,8 +292,25 @@ const getAllExperienceLevel = async (req, res, next) => {
 };
 
 const getAllIndustry = async (req, res, next) => {
+  const cacheKey = "industries";
   try {
+    const cachedIndustries = await redis.get(cacheKey);
+    if (cachedIndustries) {
+      const industries = JSON.parse(cachedIndustries);
+      return res
+        .status(StatusCodes.OK)
+        .json(
+          new ApiResponse(
+            StatusCodes.OK,
+            industries,
+            "Industries retrieved from cache successfully"
+          )
+        );
+    }
+
     const industries = await jobServices.getAllIndustry();
+    await redis.set(cacheKey, JSON.stringify(industries), "EX", 300);
+
     return res
       .status(StatusCodes.OK)
       .json(
