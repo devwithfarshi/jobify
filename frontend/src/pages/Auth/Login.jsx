@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -31,6 +31,12 @@ const Login = () => {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (Cookie.get("token")) {
+      navigate("/dashboard");
+    }
+  }, []);
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -8,12 +8,13 @@ const RootLayout = () => {
   const location = useLocation();
   return (
     <>
-      {!location.pathname.startsWith("/dashboard") && <Header />}
+      {!location.pathname.startsWith("/dashboard") &&
+        !location.pathname.startsWith("/login") && <Header />}
       {isAuthenticated && location.pathname.startsWith("/dashboard") && (
         <Sidebar />
       )}
       <main
-        className={`duration-150 ${
+        className={`duration-150 bg-gray-100 ${
           isAuthenticated && location.pathname.startsWith("/dashboard")
             ? "xl:pl-[300px]"
             : ""

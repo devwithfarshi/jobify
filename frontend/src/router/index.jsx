@@ -2,9 +2,11 @@ import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "../components/layouts/RootLayout";
 import Home from "../pages/Home";
 import Login from "../pages/Auth/Login";
-import Dashboard from "../pages/Dashboard";
+import Dashboard from "../pages/Dashboard/Dashboard";
 import RequireAuth from "../components/layouts/RequireAuth";
 import AuthProvider from "../context/AuthContext";
+import Jobs from "../pages/Dashboard/Jobs";
+import CreateNewJobs from "../pages/Dashboard/CreateNewJobs";
 
 export const router = createBrowserRouter([
   {
@@ -27,12 +29,20 @@ export const router = createBrowserRouter([
             index: true,
             element: <Dashboard />,
           },
+          {
+            path: "jobs",
+            element: <Jobs />,
+          },
+          {
+            path: "jobs/new",
+            element: <CreateNewJobs />,
+          },
         ],
       },
+      {
+        path: "login",
+        element: <Login />,
+      },
     ],
-  },
-  {
-    path: "login",
-    element: <Login />,
   },
 ]);

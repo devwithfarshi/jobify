@@ -21,7 +21,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LogOut from "@mui/icons-material/Logout";
-import { Menu, X } from "@mui/icons-material";
+import { DocumentScanner, Menu, X } from "@mui/icons-material";
 const sidebarWidth = 280;
 const menuItems = [
   {
@@ -30,9 +30,14 @@ const menuItems = [
     icon: <DashboardIcon fontSize="small" />,
   },
   {
+    title: "Companies",
+    path: "/dashboard/companies",
+    icon: <BusinessIcon fontSize="small" />,
+  },
+  {
     title: "My Jobs",
     path: "/dashboard/jobs",
-    icon: <BusinessIcon fontSize="small" />,
+    icon: <DocumentScanner fontSize="small" />,
   },
   {
     title: "Users",
