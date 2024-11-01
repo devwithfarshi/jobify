@@ -5,8 +5,9 @@ import Login from "../pages/Auth/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import RequireAuth from "../components/layouts/RequireAuth";
 import AuthProvider from "../context/AuthContext";
-import Jobs from "../pages/Dashboard/Jobs";
-import CreateNewJobs from "../pages/Dashboard/CreateNewJobs";
+import Jobs from "../pages/Dashboard/job/Jobs";
+import CreateNewJobs from "../pages/Dashboard/job/CreateNewJobs";
+import UpdateJobs from "../pages/Dashboard/job/EditJob";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
           {
             path: "jobs/new",
             element: <CreateNewJobs />,
+          },
+          {
+            path: "jobs/edit/:jobId",
+            element: <UpdateJobs />,
           },
         ],
       },

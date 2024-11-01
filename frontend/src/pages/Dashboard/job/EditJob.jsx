@@ -10,30 +10,29 @@ import {
   Typography,
 } from "@mui/material";
 import { toast } from "sonner";
-import CompanyServices from "../../services/CompanyServices";
-import JobServices from "../../services/JobServices";
+import CompanyServices from "../../../services/CompanyServices";
+import JobServices from "../../../services/JobServices";
+import { useNavigate, useParams } from "react-router-dom";
 
-const initialJobData = {
-  title: "",
-  description: "",
-  salary: "",
-  location: "",
-  requirements: [""],
-  applyLink: "",
-  company: "",
-  jobType: "",
-  experienceLevel: "",
-  industry: "",
-  remote: false,
-  skills: [""],
-};
-
-const CreateNewJobs = () => {
-  const [jobData, setJobData] = useState(initialJobData);
+const UpdateJobs = () => {
+  const { jobId } = useParams();
+  const [jobData, setJobData] = useState(null);
   const [allCompanies, setAllCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
-    (async () => {
+    const fetchJobData = async () => {
+      try {
+        const response = await JobServices.getJob(jobId);
+        setJobData(response.data);
+        setSelectedCompany(response.data.company);
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to fetch job data.");
+      }
+    };
+
+    const fetchCompanies = async () => {
       try {
         const response = await CompanyServices.getAllCompanies();
         setAllCompanies(response.data.docs);
@@ -41,8 +40,11 @@ const CreateNewJobs = () => {
         console.log(error);
         setAllCompanies([]);
       }
-    })();
-  }, []);
+    };
+
+    fetchJobData();
+    fetchCompanies();
+  }, [jobId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -128,24 +130,28 @@ const CreateNewJobs = () => {
         company: selectedCompany,
       };
 
-      const response = await JobServices.createJob(body);
+      const response = await JobServices.updateJob(jobId, body);
       if (response.success) {
-        toast.success("Job created successfully!");
-        setJobData(initialJobData);
+        toast.success("Job updated successfully!");
+        navigate("/dashboard/jobs");
       } else {
         throw new Error(response.message);
       }
     } catch (error) {
-      console.error("Failed to create job:", error);
-      toast.error(error.response.data.message || "Failed to create job");
+      console.error("Failed to update job:", error);
+      toast.error(error.response.data.message || "Failed to update job");
     }
   };
+
+  if (!jobData) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom>
-          Create New Job
+          Update Job
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <Grid container spacing={2}>
@@ -349,43 +355,14 @@ const CreateNewJobs = () => {
                 Add Skill
               </Button>
             </Grid>
-
-            {/* Remote */}
-            <Grid item xs={12}>
-              <TextField
-                select
-                label="Remote"
-                name="remote"
-                value={jobData.remote ? "Yes" : "No"}
-                onChange={(e) =>
-                  setJobData((prev) => ({
-                    ...prev,
-                    remote: e.target.value === "Yes",
-                  }))
-                }
-                fullWidth
-              >
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </TextField>
-            </Grid>
-
-            {/* Submit */}
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-              >
-                Create Job
-              </Button>
-            </Grid>
           </Grid>
+          <Button type="submit" variant="contained" sx={{ mt: 3 }}>
+            Update Job
+          </Button>
         </Box>
       </Paper>
     </Container>
   );
 };
 
-export default CreateNewJobs;
+export default UpdateJobs;

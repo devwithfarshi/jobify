@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import JobListing from "../../components/common/JobListing";
+import JobListing from "../../../components/common/JobListing";
 import { Link } from "react-router-dom";
 import { Add } from "@mui/icons-material";
 

@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
+import { Link } from "react-router-dom";
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: "box-shadow 0.3s ease-in-out",
   "&:hover": {
@@ -70,13 +71,8 @@ const JobCard = ({ job, onDelete, onEdit }) => {
           )}
           {isAuthenticated && (
             <Box display={"flex"} gap={2}>
-              <Button
-                onClick={() => onEdit(job._id)}
-                variant="contained"
-                color="primary"
-                fullWidth
-              >
-                Edit
+              <Button variant="contained" color="primary" fullWidth>
+                <Link to={`/dashboard/jobs/edit/${job._id}`}>Edit</Link>
               </Button>
               <Button
                 onClick={() => onDelete(job)}
