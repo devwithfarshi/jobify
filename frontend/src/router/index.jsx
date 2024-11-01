@@ -8,6 +8,8 @@ import AuthProvider from "../context/AuthContext";
 import Jobs from "../pages/Dashboard/job/Jobs";
 import CreateNewJobs from "../pages/Dashboard/job/CreateNewJobs";
 import UpdateJobs from "../pages/Dashboard/job/EditJob";
+import Company from "../pages/Dashboard/company/Company";
+import CreateNewCompany from "../pages/Dashboard/company/CreateNewCompany";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +43,18 @@ export const router = createBrowserRouter([
           {
             path: "jobs/edit/:jobId",
             element: <UpdateJobs />,
+          },
+          {
+            path: "companies",
+            element: <Company />,
+          },
+          {
+            path: "companies/new",
+            element: <CreateNewCompany />,
+          },
+          {
+            path: "companies/edit/:companyId",
+            element: <h1>Edit</h1>,
           },
         ],
       },
