@@ -10,17 +10,20 @@ const RootLayout = () => {
     <>
       {!location.pathname.startsWith("/dashboard") &&
         !location.pathname.startsWith("/login") && <Header />}
-      {isAuthenticated && location.pathname.startsWith("/dashboard") && (
-        <Sidebar />
-      )}
+
       <main
         className={`duration-150 bg-gray-100 ${
           isAuthenticated && location.pathname.startsWith("/dashboard")
-            ? "xl:pl-[300px]"
+            ? " flex gap-4"
             : ""
         }`}
       >
-        <Outlet />
+        {isAuthenticated && location.pathname.startsWith("/dashboard") && (
+          <Sidebar />
+        )}
+        <div className="h-screen overflow-auto flex-1">
+          <Outlet />
+        </div>
         <ScrollRestoration />
       </main>
       <footer>Footer</footer>

@@ -22,6 +22,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LogOut from "@mui/icons-material/Logout";
 import { DocumentScanner, Menu, X } from "@mui/icons-material";
+
 const sidebarWidth = 280;
 const menuItems = [
   {
@@ -58,6 +59,7 @@ const menuItems = [
     icon: <HelpOutlineIcon fontSize="small" />,
   },
 ];
+
 const Sidebar = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -182,12 +184,10 @@ const Sidebar = () => {
           edge="start"
           onClick={handleDrawerToggle}
           sx={{
-            position: "fixed",
-            left: 16,
-            top: 16,
+            margin: 2,
             bgcolor: "background.paper",
             boxShadow: 1,
-            zIndex: theme.zIndex.drawer + 2,
+            zIndex: theme.zIndex.drawer + 1,
             "&:hover": { bgcolor: "background.paper" },
           }}
         >
@@ -201,12 +201,14 @@ const Sidebar = () => {
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: isMobile ? "block" : "none", md: "block" },
           "& .MuiDrawer-paper": {
             width: sidebarWidth,
             boxSizing: "border-box",
             bgcolor: "background.paper",
             backgroundImage: "none",
+            position: "static",
+            height: "100vh",
+            overflow: "auto",
           },
         }}
       >

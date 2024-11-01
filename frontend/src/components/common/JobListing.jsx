@@ -211,7 +211,7 @@ const JobListing = ({ fromPage }) => {
         throw new Error(response.message);
       }
     } catch (error) {
-      toast.error(error.message || "Failed to delete job");
+      toast.error(error.response?.data.message || "Failed to delete job");
     }
   };
 
