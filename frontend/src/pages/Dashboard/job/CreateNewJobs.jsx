@@ -32,6 +32,7 @@ const CreateNewJobs = () => {
   const [jobData, setJobData] = useState(initialJobData);
   const [allCompanies, setAllCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     (async () => {
       try {
@@ -117,6 +118,42 @@ const CreateNewJobs = () => {
     return true;
   };
 
+  const handleGenerateDescription = async () => {
+    if (
+      !jobData.title ||
+      !jobData.company ||
+      !jobData.skills ||
+      !jobData.industry
+    ) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await JobServices.generateJobDescription({
+        jobTitle: jobData.title,
+        companyName: jobData.company,
+        skills: jobData.skills,
+        industry: jobData.industry,
+      });
+      if (response.success) {
+        setJobData((prev) => ({
+          ...prev,
+          description: response.data.description,
+        }));
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error("Failed to generate description:", error);
+      toast.error(
+        error.response.data.message || "Failed to generate description"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -142,8 +179,19 @@ const CreateNewJobs = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+    <Container
+      maxWidth="md"
+      className="flex items-center justify-center h-full"
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          borderRadius: 2,
+          height: "95%",
+          overflowY: "auto",
+        }}
+      >
         <Typography variant="h4" gutterBottom>
           Create New Job
         </Typography>
@@ -155,19 +203,6 @@ const CreateNewJobs = () => {
                 name="title"
                 value={jobData.title}
                 onChange={handleChange}
-                fullWidth
-                required
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                name="description"
-                value={jobData.description}
-                onChange={handleChange}
-                multiline
-                rows={4}
                 fullWidth
                 required
               />
@@ -368,6 +403,26 @@ const CreateNewJobs = () => {
                 <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                disabled={loading}
+                onClick={handleGenerateDescription}
+                className="mb-2"
+                variant="outlined"
+              >
+                {loading ? "Loading..." : "Generate Description"}
+              </Button>
+              <TextField
+                label="Description"
+                name="description"
+                value={jobData.description}
+                onChange={handleChange}
+                multiline
+                rows={4}
+                fullWidth
+                required
+              />
             </Grid>
 
             {/* Submit */}

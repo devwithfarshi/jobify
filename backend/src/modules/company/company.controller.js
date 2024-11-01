@@ -6,7 +6,11 @@ const ApiError = require("@/utils/apiError");
 const fs = require("fs");
 const createCompany = async (req, res, next) => {
   try {
-    console.log(req.file);
+    if (!req.file) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(new ApiError(StatusCodes.BAD_REQUEST, "Logo is required"));
+    }
     const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (allowedMimeTypes.indexOf(req.file.mimetype) === -1) {
       fs.unlinkSync(req.file.path);

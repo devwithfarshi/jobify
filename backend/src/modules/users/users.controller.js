@@ -39,6 +39,9 @@ const getUserById = async (req, res, next) => {
 };
 const deleteUser = async (req, res, next) => {
   try {
+    if (req.user._id === req.params.id) {
+      throw new ApiError(StatusCodes.FORBIDDEN, "You can't delete yourself");
+    }
     const user = await userServices.deleteUserById(req.params.id);
 
     return res.json(

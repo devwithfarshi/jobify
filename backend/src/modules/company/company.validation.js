@@ -6,6 +6,7 @@ const createCompany = {
     description: Joi.string().optional(),
     website: Joi.string().uri().optional(),
     location: Joi.string().optional(),
+    logo: Joi.string().optional(),
   }),
 };
 
@@ -15,6 +16,7 @@ const updateCompany = {
     description: Joi.string().optional(),
     website: Joi.string().uri().optional(),
     location: Joi.string().optional(),
+    logo: Joi.string().optional(),
   }),
 };
 
