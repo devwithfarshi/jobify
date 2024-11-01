@@ -1,9 +1,10 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
+import Header from "../shared/Header";
 
 const RootLayout = () => {
   return (
     <>
-      <header>Header</header>
+      <Header />
       <main>
         <Outlet />
         <ScrollRestoration />
