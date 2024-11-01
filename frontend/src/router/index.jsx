@@ -11,6 +11,8 @@ import UpdateJobs from "../pages/Dashboard/job/EditJob";
 import Company from "../pages/Dashboard/company/Company";
 import CreateNewCompany from "../pages/Dashboard/company/CreateNewCompany";
 import CompanyEdit from "../pages/Dashboard/company/CompanyEdit";
+import Users from "../pages/Dashboard/users/Users";
+import CreateNewUser from "../pages/Dashboard/users/CreateNewUser";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +58,14 @@ export const router = createBrowserRouter([
           {
             path: "companies/edit/:companyId",
             element: <CompanyEdit />,
+          },
+          {
+            path: "users",
+            element: <Users />,
+          },
+          {
+            path: "users/new",
+            element: <CreateNewUser />,
           },
         ],
       },

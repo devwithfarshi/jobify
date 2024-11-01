@@ -22,45 +22,48 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LogOut from "@mui/icons-material/Logout";
 import { DocumentScanner, Menu, X } from "@mui/icons-material";
+import useAuth from "../../../hooks/useAuth";
 
 const sidebarWidth = 280;
-const menuItems = [
-  {
-    title: "Dashboard",
-    path: "/dashboard",
-    icon: <DashboardIcon fontSize="small" />,
-  },
-  {
-    title: "Companies",
-    path: "/dashboard/companies",
-    icon: <BusinessIcon fontSize="small" />,
-  },
-  {
-    title: "My Jobs",
-    path: "/dashboard/jobs",
-    icon: <DocumentScanner fontSize="small" />,
-  },
-  {
-    title: "Users",
-    path: "/dashboard/users",
-    icon: <PeopleIcon fontSize="small" />,
-  },
-  {
-    type: "divider",
-  },
-  {
-    title: "Settings",
-    path: "/dashboard/settings",
-    icon: <SettingsIcon fontSize="small" />,
-  },
-  {
-    title: "Help Center",
-    path: "#",
-    icon: <HelpOutlineIcon fontSize="small" />,
-  },
-];
 
 const Sidebar = () => {
+  const { user } = useAuth();
+  const menuItems = [
+    {
+      title: "Dashboard",
+      path: "/dashboard",
+      icon: <DashboardIcon fontSize="small" />,
+    },
+    {
+      title: "Companies",
+      path: "/dashboard/companies",
+      icon: <BusinessIcon fontSize="small" />,
+    },
+    {
+      title: "My Jobs",
+      path: "/dashboard/jobs",
+      icon: <DocumentScanner fontSize="small" />,
+    },
+    user?.role === "super-admin" && {
+      title: "Users",
+      path: "/dashboard/users",
+      icon: <PeopleIcon fontSize="small" />,
+    },
+    {
+      type: "divider",
+    },
+    {
+      title: "Settings",
+      path: "/dashboard/settings",
+      icon: <SettingsIcon fontSize="small" />,
+    },
+    {
+      title: "Help Center",
+      path: "#",
+      icon: <HelpOutlineIcon fontSize="small" />,
+    },
+  ];
+
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
