@@ -40,13 +40,14 @@ const getAllJobs = async (req, res, next) => {
   } = req.query;
 
   const query = {};
-  if (location) query.location = new RegExp(location, "i");
-  if (title) query.title = new RegExp(title, "i");
-  if (search) query.title = new RegExp(search, "i");
+
+  if (title) query.title = { $regex: title, $options: "i" };
   if (jobType) query.jobType = jobType;
   if (experienceLevel) query.experienceLevel = experienceLevel;
   if (remote) query.remote = remote === "true";
-  if (industry) query.industry = new RegExp(industry, "i");
+  if (industry) query.industry = industry;
+  if (location) query.location = location;
+  if (search) query.title = { $regex: search, $options: "i" };
 
   const cacheKey = `jobs:${JSON.stringify(query)}:${page}:${limit}`;
 
@@ -164,6 +165,74 @@ const generateJobDescription = async (req, res, next) => {
   }
 };
 
+const getAllLocations = async (req, res, next) => {
+  try {
+    const locations = await jobServices.getAllLocations();
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          locations,
+          "Locations retrieved successfully"
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllJobTypes = async (req, res, next) => {
+  try {
+    const jobTypes = await jobServices.getAllJobTypes();
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          jobTypes,
+          "Job Types retrieved successfully"
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllExperienceLevel = async (req, res, next) => {
+  try {
+    const experienceLevels = await jobServices.getAllExperienceLevel();
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          experienceLevels,
+          "Experience Levels retrieved successfully"
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllIndustry = async (req, res, next) => {
+  try {
+    const industries = await jobServices.getAllIndustry();
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          industries,
+          "Industries retrieved successfully"
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createJob,
   getAllJobs,
@@ -171,4 +240,8 @@ module.exports = {
   updateJob,
   deleteJob,
   generateJobDescription,
+  getAllLocations,
+  getAllJobTypes,
+  getAllExperienceLevel,
+  getAllIndustry,
 };

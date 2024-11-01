@@ -54,6 +54,42 @@ const getJob = async (id) => {
   }
 };
 
+const getAllLocations = async () => {
+  try {
+    const locations = await jobModels.distinct("location");
+    return locations;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllJobTypes = async () => {
+  try {
+    const jobTypes = await jobModels.distinct("jobType");
+    return jobTypes;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllExperienceLevel = async () => {
+  try {
+    const experienceLevels = await jobModels.distinct("experienceLevel");
+    return experienceLevels;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllIndustry = async () => {
+  try {
+    const industries = await jobModels.distinct("industry");
+    return industries;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getAllJobs,
   createJob,
@@ -61,4 +97,8 @@ module.exports = {
   deleteJob,
   getJob,
   deleteJobsByCompany,
+  getAllLocations,
+  getAllJobTypes,
+  getAllExperienceLevel,
+  getAllIndustry,
 };
