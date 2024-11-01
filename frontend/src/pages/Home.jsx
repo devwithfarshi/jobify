@@ -1,287 +1,338 @@
 import {
+  Business,
+  BusinessCenter,
+  LocationOn,
+  School,
+  Search,
+} from "@mui/icons-material";
+import {
   Box,
   Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
   Container,
   Grid,
   MenuItem,
+  Pagination,
+  Paper,
+  Stack,
+  styled,
   TextField,
+  Typography,
 } from "@mui/material";
-import Pagination from "@mui/material/Pagination";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import JobServices from "../services/JobServices";
 
-const JobList = () => {
+const StyledCard = styled(Card)(({ theme }) => ({
+  transition: "box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    boxShadow: theme.shadows[6],
+  },
+  borderRadius: theme.shape.borderRadius * 2,
+  padding: theme.spacing(2),
+}));
+
+const DEFAULT_PAGE_SIZE = 10;
+const initialPaginationState = {
+  totalDocs: 0,
+  limit: DEFAULT_PAGE_SIZE,
+  totalPages: 1,
+  page: 1,
+  pagingCounter: 1,
+  hasPrevPage: false,
+  hasNextPage: false,
+  prevPage: null,
+  nextPage: null,
+};
+
+const initialFilters = {
+  title: "",
+  location: "",
+  industry: "",
+  jobType: "",
+  experienceLevel: "",
+};
+
+const Home = () => {
   const [jobs, setJobs] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({
-    location: "",
-    title: "",
-    jobType: "",
-    experienceLevel: "",
-    remote: "",
-    industry: "",
-    limit: 10,
-    page: 1,
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState(initialFilters);
+  const [pagination, setPagination] = useState(initialPaginationState);
+
+  const [filterOptions, setFilterOptions] = useState({
+    locations: [],
+    jobTypes: [],
+    experienceLevels: [],
+    industries: [],
   });
 
-  // State for options
-  const [locations, setLocations] = useState([]);
-  const [jobTypes, setJobTypes] = useState([]);
-  const [experienceLevels, setExperienceLevels] = useState([]);
-  const [industries, setIndustries] = useState([]);
+  const createQueryString = useCallback((filters, page) => {
+    const queryParams = new URLSearchParams();
 
-  // Fetch jobs with filters and pagination
-  const fetchJobs = async () => {
-    try {
-      let data;
-      if (
-        filters.location ||
-        filters.title ||
-        filters.jobType ||
-        filters.experienceLevel ||
-        filters.remote ||
-        filters.industry ||
-        filters.limit ||
-        filters.page
-      ) {
-        let query = "";
-        for (const key in filters) {
-          if (filters[key]) {
-            query += `${key}=${filters[key]}&`;
-          }
-        }
-        data = await JobServices.getAllJobsFilter(query);
-      } else {
-        data = await JobServices.getAllJobs();
+    queryParams.append("page", page);
+    queryParams.append("limit", DEFAULT_PAGE_SIZE);
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        queryParams.append(key, value);
       }
+    });
 
-      setJobs(data.data.docs); // Access jobs from `docs` array (mongoose-paginate-v2 structure)
-      setTotalPages(data.data.totalPages); // Set total pages for pagination
-    } catch (error) {
-      console.error("Failed to fetch jobs:", error);
-    }
-  };
+    return queryParams.toString();
+  }, []);
 
-  // Fetch filter options for dropdowns
-  const fetchFilterOptions = async () => {
+  const fetchJobs = useCallback(
+    async (currentPage = 1) => {
+      setLoading(true);
+      try {
+        const query = createQueryString(filters, currentPage);
+        const response = await JobServices.getAllJobs(query);
+
+        if (response.success) {
+          const { docs, ...paginationData } = response.data;
+          setJobs(docs);
+          setPagination(paginationData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters, createQueryString]
+  );
+
+  const fetchFilterOptions = useCallback(async () => {
     try {
-      const locationRes = await JobServices.getAllLocations();
-      const jobTypeRes = await JobServices.getAllJobTypes();
-      const experienceRes = await JobServices.getAllExperienceLevels();
-      const industryRes = await JobServices.getAllIndustries();
+      const [locations, types, experience, industries] = await Promise.all([
+        JobServices.getAllLocations(),
+        JobServices.getAllJobTypes(),
+        JobServices.getAllExperienceLevels(),
+        JobServices.getAllIndustries(),
+      ]);
 
-      setLocations(locationRes.data);
-      setJobTypes(jobTypeRes.data);
-      setExperienceLevels(experienceRes.data);
-      setIndustries(industryRes.data);
+      setFilterOptions({
+        locations: locations.data || [],
+        jobTypes: types.data || [],
+        experienceLevels: experience.data || [],
+        industries: industries.data || [],
+      });
     } catch (error) {
       console.error("Failed to fetch filter options:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchFilterOptions();
-    fetchJobs();
-  }, [page, filters]);
+  }, [fetchFilterOptions]);
+
+  useEffect(() => {
+    fetchJobs(pagination.page);
+  }, [fetchJobs, pagination.page]);
 
   const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handlePageChange = (event, value) => {
-    setPage(value);
+  const handlePageChange = (event, newPage) => {
+    setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
-  const columns = [
-    { field: "title", headerName: "Job Title", width: 200 },
-    {
-      field: "company",
-      headerName: "Company",
-      width: 150,
-      valueGetter: (params) => params.row?.company?.name || "N/A",
-    },
-    { field: "location", headerName: "Location", width: 150 },
-    { field: "salary", headerName: "Salary", width: 130 },
-    { field: "jobType", headerName: "Job Type", width: 120 },
-    { field: "experienceLevel", headerName: "Experience Level", width: 150 },
-    {
-      field: "applyLink",
-      headerName: "Apply Link",
-      width: 150,
-      renderCell: (params) => (
-        <a
-          href={params.row.applyLink}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Apply
-        </a>
-      ),
-    },
-  ];
+  const clearFilters = () => {
+    setFilters(initialFilters);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
 
-  return (
-    <Container maxWidth="xl">
-      <Box className="my-4 text-center">
-        <h2 className="text-teal-950 text-3xl font-semibold">
-          Jobify Opening Jobs
-        </h2>
-      </Box>
-
-      {/* Filter Form */}
-      <Grid container spacing={2} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={4}>
-          <TextField
-            select
-            label="Location"
-            name="location"
-            value={filters.location}
-            onChange={handleFilterChange}
+  const renderJobCard = (job) => (
+    <Grid item xs={12} sm={6} md={4} key={job._id}>
+      <StyledCard>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            {job.title}
+          </Typography>
+          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            {job.company?.name || "N/A"}
+          </Typography>
+          <Stack direction="row" spacing={1} sx={{ my: 2 }}>
+            <Chip
+              icon={<LocationOn />}
+              label={job.location}
+              size="small"
+              color="primary"
+              variant="outlined"
+            />
+            <Chip
+              icon={<BusinessCenter />}
+              label={job.jobType}
+              size="small"
+              color="secondary"
+              variant="outlined"
+            />
+            <Chip
+              icon={<School />}
+              label={job.experienceLevel}
+              size="small"
+              color="info"
+              variant="outlined"
+            />
+          </Stack>
+          <Typography variant="h6" gutterBottom>
+            {job.salary}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            href={`/jobs/${job._id}`}
             fullWidth
           >
-            <MenuItem value="">All</MenuItem>
-            {locations.map((loc) => (
-              <MenuItem key={loc} value={loc}>
-                {loc}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <TextField
-            label="Job Title"
-            name="title"
-            value={filters.title}
-            onChange={handleFilterChange}
-            fullWidth
-          />
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <TextField
-            select
-            label="Industry"
-            name="industry"
-            value={filters.industry}
-            onChange={handleFilterChange}
-            fullWidth
-          >
-            <MenuItem value="">All</MenuItem>
-            {industries.map((ind) => (
-              <MenuItem key={ind} value={ind}>
-                {ind}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <TextField
-            select
-            label="Job Type"
-            name="jobType"
-            value={filters.jobType}
-            onChange={handleFilterChange}
-            fullWidth
-          >
-            <MenuItem value="">All</MenuItem>
-            {jobTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <TextField
-            select
-            label="Experience Level"
-            name="experienceLevel"
-            value={filters.experienceLevel}
-            onChange={handleFilterChange}
-            fullWidth
-          >
-            <MenuItem value="">All</MenuItem>
-            {experienceLevels.map((level) => (
-              <MenuItem key={level} value={level}>
-                {level}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <TextField
-            select
-            label="Remote"
-            name="remote"
-            value={filters.remote}
-            onChange={handleFilterChange}
-            fullWidth
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="true">Remote</MenuItem>
-            <MenuItem value="false">On-site</MenuItem>
-          </TextField>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Button variant="contained" onClick={() => fetchJobs()} fullWidth>
-            Apply Filters
+            Apply Now
           </Button>
-        </Grid>
+        </CardContent>
+      </StyledCard>
+    </Grid>
+  );
+
+  const renderFilterFields = () => (
+    <Grid container spacing={2} alignItems="center">
+      <Grid item xs={12} sm={6} md={4}>
+        <TextField
+          fullWidth
+          name="title"
+          value={filters.title}
+          onChange={handleFilterChange}
+          placeholder="Job Title or Keywords"
+          InputProps={{
+            startAdornment: <Search sx={{ mr: 1, color: "text.secondary" }} />,
+          }}
+        />
       </Grid>
 
-      {/* Job Data Grid */}
-      <Box
-        sx={{
-          height: 600,
-          width: "100%",
-          bgcolor: "#f9fafb",
-          borderRadius: 2,
-          boxShadow: 3,
-          p: 2,
-        }}
-      >
-        <DataGrid
-          rows={jobs}
-          columns={columns}
-          getRowId={(row) => row._id}
-          disableColumnFilter
-          disableColumnSelector
-          disableDensitySelector
-          slots={{ toolbar: GridToolbar }}
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              bgcolor: "#e0f2f1",
-              fontWeight: "bold",
-            },
-            "& .MuiDataGrid-footerContainer": { bgcolor: "#e0f2f1" },
-            "& .MuiDataGrid-row:hover": { bgcolor: "#f1f8e9" },
-          }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-            },
-          }}
-          pageSize={10}
-        />
-      </Box>
+      {[
+        {
+          name: "location",
+          label: "Location",
+          icon: <LocationOn sx={{ mr: 1, color: "text.secondary" }} />,
+          options: filterOptions.locations,
+        },
+        {
+          name: "industry",
+          label: "Industry",
+          icon: <Business sx={{ mr: 1, color: "text.secondary" }} />,
+          options: filterOptions.industries,
+        },
+        {
+          name: "jobType",
+          label: "Job Type",
+          icon: <BusinessCenter sx={{ mr: 1, color: "text.secondary" }} />,
+          options: filterOptions.jobTypes,
+        },
+        {
+          name: "experienceLevel",
+          label: "Experience Level",
+          icon: <School sx={{ mr: 1, color: "text.secondary" }} />,
+          options: filterOptions.experienceLevels,
+        },
+      ].map(({ name, label, icon, options }) => (
+        <Grid item xs={12} sm={6} md={4} key={name}>
+          <TextField
+            select
+            fullWidth
+            name={name}
+            value={filters[name]}
+            onChange={handleFilterChange}
+            label={label}
+            InputProps={{ startAdornment: icon }}
+          >
+            <MenuItem value="">All {label}s</MenuItem>
+            {options.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+      ))}
 
-      {/* Pagination */}
-      <Pagination
-        count={totalPages}
-        page={page}
-        onChange={handlePageChange}
-        color="primary"
-        sx={{ mt: 4, display: "flex", justifyContent: "center" }}
-      />
-    </Container>
+      <Grid item xs={12} md={4}>
+        <Button
+          variant="outlined"
+          fullWidth
+          size="large"
+          onClick={clearFilters}
+          sx={{ mt: 2 }}
+        >
+          Clear Filters
+        </Button>
+      </Grid>
+    </Grid>
+  );
+
+  return (
+    <Box sx={{ bgcolor: "grey.100", minHeight: "100vh", py: 4 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ mb: 1, color: "text.primary", fontWeight: "bold" }}
+          >
+            Find Your Next Opportunity
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            Discover thousands of job opportunities from top companies
+          </Typography>
+        </Box>
+
+        <Paper elevation={3} sx={{ mb: 4, p: 3, borderRadius: 2 }}>
+          {renderFilterFields()}
+        </Paper>
+
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CircularProgress />
+          </Box>
+        ) : jobs.length === 0 ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <Typography variant="h6" color="text.secondary">
+              No jobs found. Please adjust your search criteria.
+            </Typography>
+          </Box>
+        ) : (
+          <>
+            <Grid container spacing={2} mt={4}>
+              {jobs.map(renderJobCard)}
+            </Grid>
+
+            {pagination.totalPages > 1 && (
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                <Pagination
+                  count={pagination.totalPages}
+                  page={pagination.page}
+                  onChange={handlePageChange}
+                  color="primary"
+                  variant="outlined"
+                  disabled={loading}
+                />
+              </Box>
+            )}
+
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              textAlign="center"
+              mt={2}
+            >
+              Showing {jobs.length} of {pagination.totalDocs} jobs
+            </Typography>
+          </>
+        )}
+      </Container>
+    </Box>
   );
 };
 
-export default JobList;
+export default Home;
