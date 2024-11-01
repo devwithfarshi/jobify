@@ -10,6 +10,7 @@ import CreateNewJobs from "../pages/Dashboard/job/CreateNewJobs";
 import UpdateJobs from "../pages/Dashboard/job/EditJob";
 import Company from "../pages/Dashboard/company/Company";
 import CreateNewCompany from "../pages/Dashboard/company/CreateNewCompany";
+import CompanyEdit from "../pages/Dashboard/company/CompanyEdit";
 
 export const router = createBrowserRouter([
   {
@@ -54,7 +55,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "companies/edit/:companyId",
-            element: <h1>Edit</h1>,
+            element: <CompanyEdit />,
           },
         ],
       },

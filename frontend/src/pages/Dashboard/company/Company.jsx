@@ -14,6 +14,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import axios from "axios";
 import CompanyServices from "../../../services/CompanyServices";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const CompanyManager = () => {
   const [companies, setCompanies] = useState([]);
@@ -57,9 +58,20 @@ const CompanyManager = () => {
     console.log("Edit company:", companyId);
   };
 
-  const handleDelete = (companyId) => {
-    // Handle delete functionality here
-    console.log("Delete company:", companyId);
+  const handleDelete = async (companyId) => {
+    try {
+      const res = await CompanyServices.deleteCompany(companyId);
+      if (res.success) {
+        setCompanies((prevCompanies) =>
+          prevCompanies.filter((company) => company._id !== companyId)
+        );
+
+        toast.success("Company deleted successfully");
+      }
+    } catch (error) {
+      console.error("Failed to delete company:", error);
+      toast.error("Failed to delete company. Please try again.");
+    }
   };
 
   return (
@@ -100,6 +112,11 @@ const CompanyManager = () => {
                   }}
                 >
                   <Box>
+                    <img
+                      className="size-20 rounded-md"
+                      src={company.logo}
+                      alt={company.name}
+                    />
                     <Typography variant="h6">{company.name}</Typography>
                     <Typography
                       variant="body2"
@@ -118,12 +135,11 @@ const CompanyManager = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    <IconButton
-                      onClick={() => handleEdit(company._id)}
-                      color="primary"
-                    >
-                      <Edit />
-                    </IconButton>
+                    <Link to={`/dashboard/companies/edit/${company._id}`}>
+                      <IconButton color="primary">
+                        <Edit />
+                      </IconButton>
+                    </Link>
                     <IconButton
                       onClick={() => handleDelete(company._id)}
                       color="secondary"
