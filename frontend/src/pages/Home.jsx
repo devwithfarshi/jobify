@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import JobServices from "../services/JobServices";
 
@@ -26,6 +25,12 @@ const JobList = () => {
     limit: 10,
     page: 1,
   });
+
+  // State for options
+  const [locations, setLocations] = useState([]);
+  const [jobTypes, setJobTypes] = useState([]);
+  const [experienceLevels, setExperienceLevels] = useState([]);
+  const [industries, setIndustries] = useState([]);
 
   // Fetch jobs with filters and pagination
   const fetchJobs = async () => {
@@ -59,7 +64,25 @@ const JobList = () => {
     }
   };
 
+  // Fetch filter options for dropdowns
+  const fetchFilterOptions = async () => {
+    try {
+      const locationRes = await JobServices.getAllLocations();
+      const jobTypeRes = await JobServices.getAllJobTypes();
+      const experienceRes = await JobServices.getAllExperienceLevels();
+      const industryRes = await JobServices.getAllIndustries();
+
+      setLocations(locationRes.data);
+      setJobTypes(jobTypeRes.data);
+      setExperienceLevels(experienceRes.data);
+      setIndustries(industryRes.data);
+    } catch (error) {
+      console.error("Failed to fetch filter options:", error);
+    }
+  };
+
   useEffect(() => {
+    fetchFilterOptions();
     fetchJobs();
   }, [page, filters]);
 
@@ -111,13 +134,22 @@ const JobList = () => {
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>
           <TextField
+            select
             label="Location"
             name="location"
             value={filters.location}
             onChange={handleFilterChange}
             fullWidth
-          />
+          >
+            <MenuItem value="">All</MenuItem>
+            {locations.map((loc) => (
+              <MenuItem key={loc} value={loc}>
+                {loc}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
+
         <Grid item xs={12} md={4}>
           <TextField
             label="Job Title"
@@ -127,15 +159,25 @@ const JobList = () => {
             fullWidth
           />
         </Grid>
+
         <Grid item xs={12} md={4}>
           <TextField
+            select
             label="Industry"
             name="industry"
             value={filters.industry}
             onChange={handleFilterChange}
             fullWidth
-          />
+          >
+            <MenuItem value="">All</MenuItem>
+            {industries.map((ind) => (
+              <MenuItem key={ind} value={ind}>
+                {ind}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
+
         <Grid item xs={12} md={4}>
           <TextField
             select
@@ -146,11 +188,14 @@ const JobList = () => {
             fullWidth
           >
             <MenuItem value="">All</MenuItem>
-            <MenuItem value="Full-time">Full-time</MenuItem>
-            <MenuItem value="Part-time">Part-time</MenuItem>
-            <MenuItem value="Contract">Contract</MenuItem>
+            {jobTypes.map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
           </TextField>
         </Grid>
+
         <Grid item xs={12} md={4}>
           <TextField
             select
@@ -161,11 +206,14 @@ const JobList = () => {
             fullWidth
           >
             <MenuItem value="">All</MenuItem>
-            <MenuItem value="Entry">Entry</MenuItem>
-            <MenuItem value="Mid">Mid</MenuItem>
-            <MenuItem value="Senior">Senior</MenuItem>
+            {experienceLevels.map((level) => (
+              <MenuItem key={level} value={level}>
+                {level}
+              </MenuItem>
+            ))}
           </TextField>
         </Grid>
+
         <Grid item xs={12} md={4}>
           <TextField
             select
@@ -180,6 +228,7 @@ const JobList = () => {
             <MenuItem value="false">On-site</MenuItem>
           </TextField>
         </Grid>
+
         <Grid item xs={12}>
           <Button variant="contained" onClick={() => fetchJobs()} fullWidth>
             Apply Filters
