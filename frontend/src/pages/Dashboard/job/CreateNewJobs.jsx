@@ -117,6 +117,39 @@ const CreateNewJobs = () => {
     return true;
   };
 
+  const handleGenerateDescription = async () => {
+    if (
+      !jobData.title ||
+      !jobData.company ||
+      !jobData.skills ||
+      !jobData.industry
+    ) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    try {
+      const response = await JobServices.generateJobDescription({
+        jobTitle: jobData.title,
+        companyName: jobData.company,
+        skills: jobData.skills,
+        industry: jobData.industry,
+      });
+      if (response.success) {
+        setJobData((prev) => ({
+          ...prev,
+          description: response.data.description,
+        }));
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error("Failed to generate description:", error);
+      toast.error(
+        error.response.data.message || "Failed to generate description"
+      );
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -155,19 +188,6 @@ const CreateNewJobs = () => {
                 name="title"
                 value={jobData.title}
                 onChange={handleChange}
-                fullWidth
-                required
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                name="description"
-                value={jobData.description}
-                onChange={handleChange}
-                multiline
-                rows={4}
                 fullWidth
                 required
               />
@@ -368,6 +388,21 @@ const CreateNewJobs = () => {
                 <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <Button onClick={handleGenerateDescription}>
+                Write Description with AI
+              </Button>
+              <TextField
+                label="Description"
+                name="description"
+                value={jobData.description}
+                onChange={handleChange}
+                multiline
+                rows={4}
+                fullWidth
+                required
+              />
             </Grid>
 
             {/* Submit */}
