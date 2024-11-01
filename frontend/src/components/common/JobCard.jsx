@@ -20,7 +20,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
   padding: theme.spacing(2),
 }));
-const JobCard = ({ job, onDelete, onEdit }) => {
+const JobCard = ({ job, onDelete }) => {
   const { isAuthenticated } = useAuth();
 
   return (
@@ -75,7 +75,7 @@ const JobCard = ({ job, onDelete, onEdit }) => {
                 <Link to={`/dashboard/jobs/edit/${job._id}`}>Edit</Link>
               </Button>
               <Button
-                onClick={() => onDelete(job)}
+                onClick={() => onDelete(job._id)}
                 variant="contained"
                 color="error"
                 fullWidth
