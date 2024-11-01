@@ -1,8 +1,8 @@
 import requests from "./httpRequest";
 
 const JobServices = {
-  getAllJobs: async () => requests.get("/jobs"),
-  getAllJobsFilter: async (query) => requests.get(`/jobs?${query}`),
+  getAllJobs: async (query = null) =>
+    requests.get(query ? `/jobs?${query}` : "/jobs"),
   getJob: async (id) => requests.get(`/jobs/${id}`),
   createJob: async (body) => requests.post("/jobs", body),
   updateJob: async (id, body) => requests.put(`/jobs/${id}`, body),

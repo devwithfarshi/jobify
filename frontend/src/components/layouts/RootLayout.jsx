@@ -1,11 +1,25 @@
-import { Outlet, ScrollRestoration } from "react-router-dom";
+import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import Header from "../shared/Header";
+import Sidebar from "../shared/Sidebar";
+import useAuth from "../../hooks/useAuth";
 
 const RootLayout = () => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
   return (
     <>
-      <Header />
-      <main>
+      {!location.pathname.startsWith("/dashboard") &&
+        !location.pathname.startsWith("/login") && <Header />}
+      {isAuthenticated && location.pathname.startsWith("/dashboard") && (
+        <Sidebar />
+      )}
+      <main
+        className={`duration-150 bg-gray-100 ${
+          isAuthenticated && location.pathname.startsWith("/dashboard")
+            ? "xl:pl-[300px]"
+            : ""
+        }`}
+      >
         <Outlet />
         <ScrollRestoration />
       </main>

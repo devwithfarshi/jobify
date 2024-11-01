@@ -27,7 +27,7 @@ router.post(
 );
 router.put(
   "/:id",
-  validate(JobValidation.jobUpdateValidation),
+  // validate(JobValidation.jobUpdateValidation),
   jobController.updateJob
 );
 router.delete("/:id", jobController.deleteJob);
