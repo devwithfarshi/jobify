@@ -26,6 +26,17 @@ const getRedisCache = async (key) => {
   }
 };
 
+const clearCachePattern = async (pattern) => {
+  try {
+    const keys = await redis.keys(pattern);
+    if (keys.length > 0) {
+      await redis.del(keys);
+    }
+  } catch (error) {
+    console.error(`Error clearing cache for pattern ${pattern}:`, error);
+  }
+};
+
 const createJob = async (req, res, next) => {
   try {
     const companyExists = await companyServices.getCompany(req.body.company);
@@ -35,7 +46,8 @@ const createJob = async (req, res, next) => {
         .json(new ApiError(StatusCodes.NOT_FOUND, "Company not found"));
     }
     const job = await jobServices.createJob(req.body);
-    await redis.del("jobs");
+
+    await clearCachePattern("jobs:*");
     return res
       .status(StatusCodes.CREATED)
       .json(
@@ -134,8 +146,11 @@ const getJob = async (req, res, next) => {
 const updateJob = async (req, res, next) => {
   try {
     const job = await jobServices.updateJob(req.params.id, req.body);
-    await redis.del("jobs");
+
+    // Clear cache related to jobs
+    await clearCachePattern("jobs:*");
     await redis.del(`job:${req.params.id}`);
+
     return res
       .status(StatusCodes.OK)
       .json(new ApiResponse(StatusCodes.OK, job, "Job updated successfully"));
@@ -146,14 +161,23 @@ const updateJob = async (req, res, next) => {
 
 const deleteJob = async (req, res, next) => {
   try {
-    const job = await jobServices.deleteJob(req.params.id);
-    await redis.del("jobs");
+    const jobExists = await jobServices.getJob(req.params.id);
+    if (!jobExists) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json(new ApiError(StatusCodes.NOT_FOUND, "Job not found"));
+    }
+    await jobServices.deleteJob(req.params.id);
+
+    // Clear cache related to jobs
+    await clearCachePattern("jobs:*");
     await redis.del(`job:${req.params.id}`);
+
     return res
-      .status(StatusCodes.NO_CONTENT)
+      .status(StatusCodes.OK)
       .json(
         new ApiResponse(
-          StatusCodes.NO_CONTENT,
+          StatusCodes.OK,
           { _id: req.params.id },
           "Job deleted successfully"
         )
@@ -162,7 +186,6 @@ const deleteJob = async (req, res, next) => {
     next(error);
   }
 };
-
 const generateJobDescription = async (req, res, next) => {
   try {
     const { companyName, jobTitle, industry, skills } = req.body;
@@ -189,7 +212,6 @@ const generateJobDescription = async (req, res, next) => {
 const getAllLocations = async (req, res, next) => {
   const cacheKey = "locations";
   try {
-    // Check if data is in cache
     const cachedLocations = await redis.get(cacheKey);
     if (cachedLocations) {
       const locations = JSON.parse(cachedLocations);
@@ -259,7 +281,6 @@ const getAllJobTypes = async (req, res, next) => {
 const getAllExperienceLevel = async (req, res, next) => {
   const cacheKey = "experienceLevels";
   try {
-    // Check if data is in cache
     const cachedExperienceLevels = await redis.get(cacheKey);
     if (cachedExperienceLevels) {
       const experienceLevels = JSON.parse(cachedExperienceLevels);
