@@ -10,10 +10,6 @@ import {
   Button,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   MenuItem,
   Pagination,
@@ -22,10 +18,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import JobServices from "../../services/JobServices";
 import { toast } from "sonner";
+import JobServices from "../../services/JobServices";
 import JobCard from "./JobCard";
-import EditJobModal from "./EditJobModal";
 
 const DEFAULT_PAGE_SIZE = 10;
 const initialPaginationState = {
@@ -53,7 +48,6 @@ const JobListing = ({ fromPage }) => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState(initialFilters);
   const [pagination, setPagination] = useState(initialPaginationState);
-  const [selectedEditJob, setSelectedEditJob] = useState(null);
   const [filterOptions, setFilterOptions] = useState({
     locations: [],
     jobTypes: [],
@@ -221,43 +215,6 @@ const JobListing = ({ fromPage }) => {
     }
   };
 
-  const handleJobEdit = async (id, updatedJobValues) => {
-    try {
-      const response = await JobServices.updateJob(id, {
-        title: updatedJobValues.title,
-        location: updatedJobValues.location,
-        industry: updatedJobValues.industry,
-        jobType: updatedJobValues.jobType,
-        experienceLevel: updatedJobValues.experienceLevel,
-        description: updatedJobValues.description,
-        salary: updatedJobValues.salary,
-        requirements: updatedJobValues.requirements,
-        applyLink: updatedJobValues.applyLink,
-      });
-      if (response.success) {
-        setJobs((prev) =>
-          prev.map((job) =>
-            job._id === id ? { ...job, ...response.data } : job
-          )
-        );
-        toast.success("Job updated successfully");
-        setSelectedEditJob(null);
-      } else {
-        throw new Error(response.message);
-      }
-    } catch (error) {
-      toast.error(error.message || "Failed to edit job");
-    }
-  };
-
-  const handleEditModalOpen = (jobID) => {
-    setSelectedEditJob(jobID);
-  };
-
-  const handleEditModalClose = () => {
-    setSelectedEditJob(null);
-  };
-
   return (
     <Box sx={{ bgcolor: "grey.100", minHeight: "100vh", py: 4 }}>
       <Container maxWidth="lg">
@@ -293,12 +250,7 @@ const JobListing = ({ fromPage }) => {
           <>
             <Grid container spacing={2} mt={4}>
               {jobs.map((job) => (
-                <JobCard
-                  key={job._id}
-                  job={job}
-                  onDelete={handleJobDelete}
-                  onEdit={handleEditModalOpen}
-                />
+                <JobCard key={job._id} job={job} onDelete={handleJobDelete} />
               ))}
             </Grid>
 
@@ -324,17 +276,6 @@ const JobListing = ({ fromPage }) => {
               Showing {jobs.length} of {pagination.totalDocs} jobs
             </Typography>
           </>
-        )}
-
-        {/* Edit Job Modal */}
-        {selectedEditJob && (
-          <EditJobModal
-            open={Boolean(selectedEditJob)}
-            jobId={selectedEditJob}
-            filterOptions={filterOptions}
-            onClose={handleEditModalClose}
-            onSave={handleJobEdit}
-          />
         )}
       </Container>
     </Box>
