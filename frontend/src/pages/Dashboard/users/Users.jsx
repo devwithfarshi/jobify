@@ -18,7 +18,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import UserService from "../../../services/UserServices";
 import useAuth from "../../../hooks/useAuth";
-
 const Users = () => {
   const { user: loggedInUser } = useAuth();
   const [users, setUsers] = useState([]);
@@ -40,13 +39,13 @@ const Users = () => {
   });
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(pagination.page);
   }, [pagination.page]);
 
   const fetchUsers = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await UserService.getAllUsers();
+      const response = await UserService.getAllUsers(`page=${page}`);
       setUsers(response.data.docs);
       setPagination({
         page: response.data.page,
@@ -64,6 +63,7 @@ const Users = () => {
   };
 
   const handlePageChange = (event, newPage) => {
+    setPagination((prev) => ({ ...prev, page: newPage }));
     fetchUsers(newPage);
   };
 

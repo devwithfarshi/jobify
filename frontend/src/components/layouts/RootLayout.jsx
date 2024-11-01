@@ -26,7 +26,6 @@ const RootLayout = () => {
         </div>
         <ScrollRestoration />
       </main>
-      <footer>Footer</footer>
     </>
   );
 };

@@ -51,7 +51,7 @@ const CreateNewUser = ({ onCreateUser }) => {
   };
 
   return (
-    <Container>
+    <Container className="h-full flex items-center justify-center">
       <Box
         sx={{
           padding: 4,

@@ -1,33 +1,32 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  IconButton,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import { DocumentScanner, Menu, X } from "@mui/icons-material";
 import BusinessIcon from "@mui/icons-material/Business";
-import PeopleIcon from "@mui/icons-material/People";
-import DescriptionIcon from "@mui/icons-material/Description";
-import SettingsIcon from "@mui/icons-material/Settings";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LogOut from "@mui/icons-material/Logout";
-import { DocumentScanner, Menu, X } from "@mui/icons-material";
+import PeopleIcon from "@mui/icons-material/People";
+import SettingsIcon from "@mui/icons-material/Settings";
 import useAuth from "../../../hooks/useAuth";
 
 const sidebarWidth = 280;
 
 const Sidebar = () => {
-  const { user } = useAuth();
+  const { user, logOut } = useAuth();
   const menuItems = [
     {
       title: "Dashboard",
@@ -62,7 +61,7 @@ const Sidebar = () => {
       path: "#",
       icon: <HelpOutlineIcon fontSize="small" />,
     },
-  ];
+  ].filter(Boolean);
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -82,8 +81,8 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    // Add logout logic, e.g., clearing tokens, redirecting to login, etc.
-    navigate("/login"); // Adjust path as needed
+    logOut();
+    navigate("/login");
   };
 
   const drawer = (

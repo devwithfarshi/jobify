@@ -32,6 +32,7 @@ const CreateNewJobs = () => {
   const [jobData, setJobData] = useState(initialJobData);
   const [allCompanies, setAllCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     (async () => {
       try {
@@ -127,6 +128,7 @@ const CreateNewJobs = () => {
       toast.error("Please fill all the fields");
       return;
     }
+    setLoading(true);
     try {
       const response = await JobServices.generateJobDescription({
         jobTitle: jobData.title,
@@ -147,6 +149,8 @@ const CreateNewJobs = () => {
       toast.error(
         error.response.data.message || "Failed to generate description"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -175,8 +179,19 @@ const CreateNewJobs = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+    <Container
+      maxWidth="md"
+      className="flex items-center justify-center h-full"
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          borderRadius: 2,
+          height: "95%",
+          overflowY: "auto",
+        }}
+      >
         <Typography variant="h4" gutterBottom>
           Create New Job
         </Typography>
@@ -390,8 +405,13 @@ const CreateNewJobs = () => {
               </TextField>
             </Grid>
             <Grid item xs={12}>
-              <Button onClick={handleGenerateDescription}>
-                Write Description with AI
+              <Button
+                disabled={loading}
+                onClick={handleGenerateDescription}
+                className="mb-2"
+                variant="outlined"
+              >
+                {loading ? "Loading..." : "Generate Description"}
               </Button>
               <TextField
                 label="Description"
