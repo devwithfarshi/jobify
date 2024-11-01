@@ -14,6 +14,11 @@ router.get(
 );
 router.get("/:id", jobController.getJob);
 
+router.get("/get/locations", jobController.getAllLocations);
+router.get("/get/job-types", jobController.getAllJobTypes);
+router.get("/get/experience-levels", jobController.getAllExperienceLevel);
+router.get("/get/industries", jobController.getAllIndustry);
+
 router.use([authenticate, authorizeRole([superAdmin, admin])]);
 router.post(
   "/",
