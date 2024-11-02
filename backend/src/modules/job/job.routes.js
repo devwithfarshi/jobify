@@ -6,6 +6,7 @@ const authorizeRole = require("@/middlewares/authorizeRole.middleware");
 const validate = require("@/middlewares/validation.middleware");
 const jobController = require("./job.controller");
 const JobValidation = require("./job.validation");
+const upload = require("@/middlewares/multer.middleware");
 
 router.get(
   "/",
@@ -23,6 +24,8 @@ router.get("/get/industries", jobController.getAllIndustry);
 router.use([authenticate, authorizeRole([superAdmin, admin])]);
 router.post(
   "/",
+
+  upload.array("files", 5),
   validate(JobValidation.jobCreateValidation),
   jobController.createJob
 );
