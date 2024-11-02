@@ -422,6 +422,12 @@ const CreateNewJobs = () => {
                 rows={4}
                 fullWidth
                 required
+                className="resize"
+                sx={{
+                  "& .resize": {
+                    resize: "unset",
+                  },
+                }}
               />
             </Grid>
 

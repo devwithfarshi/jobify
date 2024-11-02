@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { PhotoCamera } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Grid,
-  TextField,
-  Typography,
   IconButton,
   Snackbar,
-  CircularProgress,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { PhotoCamera } from "@mui/icons-material";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useCompany from "../../../hooks/useCompany";
 import CompanyServices from "../../../services/CompanyServices";
 
-const CreateNewCompany = () => {
+const CompanyEdit = () => {
+  const { companyId } = useParams();
+  const navigate = useNavigate();
+  const { handleUpdate } = useCompany();
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -22,10 +27,29 @@ const CreateNewCompany = () => {
     location: "",
   });
   const [logo, setLogo] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const fetchCompanyDetails = async () => {
+      try {
+        const response = await CompanyServices.getCompany(companyId);
+        setFormData(response.data);
+      } catch (error) {
+        console.error("Failed to fetch company details:", error);
+        setSnackbarMessage(
+          "Failed to fetch company details. Please try again."
+        );
+        setSnackbarOpen(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanyDetails();
+  }, [companyId]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -54,7 +78,9 @@ const CreateNewCompany = () => {
     }
 
     const formDataToSend = new FormData();
-    formDataToSend.append("logo", logo);
+    if (logo instanceof File) {
+      formDataToSend.append("logo", logo);
+    }
     formDataToSend.append("name", formData.name);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("website", formData.website);
@@ -62,27 +88,29 @@ const CreateNewCompany = () => {
 
     setLoading(true);
     try {
-      const response = await CompanyServices.createCompany(formDataToSend);
+      const response = await handleUpdate(companyId, formDataToSend);
       setSnackbarMessage(response.message);
-      setFormData({
-        name: "",
-        description: "",
-        website: "",
-        location: "",
-      });
-      setLogo(null);
+      navigate(-1);
     } catch (error) {
-      setSnackbarMessage("Failed to create company. Please try again.");
+      setSnackbarMessage("Failed to update company. Please try again.");
     } finally {
       setLoading(false);
       setSnackbarOpen(true);
     }
   };
 
+  if (loading) {
+    return (
+      <Container maxWidth="sm">
+        <CircularProgress />
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="sm">
       <Typography variant="h4" component="h1" gutterBottom>
-        Create New Company
+        Edit Company
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
@@ -91,7 +119,7 @@ const CreateNewCompany = () => {
               fullWidth
               label="Company Name"
               name="name"
-              value={formData.name}
+              value={formData.name || ""}
               onChange={handleChange}
               error={Boolean(errors.name)}
               helperText={errors.name}
@@ -104,7 +132,7 @@ const CreateNewCompany = () => {
               fullWidth
               label="Description"
               name="description"
-              value={formData.description}
+              value={formData.description || ""}
               onChange={handleChange}
               variant="outlined"
               multiline
@@ -116,7 +144,7 @@ const CreateNewCompany = () => {
               fullWidth
               label="Website"
               name="website"
-              value={formData.website}
+              value={formData.website || ""}
               onChange={handleChange}
               error={Boolean(errors.website)}
               helperText={errors.website}
@@ -128,7 +156,7 @@ const CreateNewCompany = () => {
               fullWidth
               label="Location"
               name="location"
-              value={formData.location}
+              value={formData.location || ""}
               onChange={handleChange}
               variant="outlined"
             />
@@ -165,7 +193,7 @@ const CreateNewCompany = () => {
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              "Create Company"
+              "Update Company"
             )}
           </Button>
         </Box>
@@ -180,4 +208,4 @@ const CreateNewCompany = () => {
   );
 };
 
-export default CreateNewCompany;
+export default CompanyEdit;

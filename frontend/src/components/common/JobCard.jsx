@@ -27,7 +27,12 @@ const JobCard = ({ job, onDelete }) => {
     <Grid item xs={12} sm={6} md={4} key={job._id}>
       <StyledCard>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography
+            variant="h6"
+            gutterBottom
+            component={Link}
+            to={`/job-details/${job._id}`}
+          >
             {job.title}
           </Typography>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
