@@ -13,6 +13,7 @@ router.get(
   jobController.getAllJobs
 );
 router.get("/:id", jobController.getJob);
+router.get("/company/:companyID", jobController.getJobsByCompany);
 
 router.get("/get/locations", jobController.getAllLocations);
 router.get("/get/job-types", jobController.getAllJobTypes);

@@ -47,8 +47,19 @@ const deleteJobsByCompany = async (companyID) => {
 
 const getJob = async (id) => {
   try {
-    const job = await jobModels.findById(id);
+    const job = await jobModels.findById(id).populate("company");
     return job;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getJobsByCompany = async (companyID) => {
+  try {
+    const jobs = await jobModels
+      .find({ company: companyID })
+      .populate("company");
+    return jobs;
   } catch (error) {
     throw error;
   }
@@ -101,4 +112,5 @@ module.exports = {
   getAllJobTypes,
   getAllExperienceLevel,
   getAllIndustry,
+  getJobsByCompany,
 };
