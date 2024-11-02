@@ -38,7 +38,10 @@ const JobCard = ({ job, onDelete }) => {
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
             {job.company?.name || "N/A"}
           </Typography>
-          <Stack direction="row" spacing={1} sx={{ my: 2 }}>
+          <Stack
+            direction="row"
+            sx={{ my: 2, flexWrap: "wrap", rowGap: 1, columnGap: 1 }}
+          >
             <Chip
               icon={<LocationOn />}
               label={job.location}

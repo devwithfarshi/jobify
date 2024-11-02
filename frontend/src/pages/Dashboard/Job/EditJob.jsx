@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -9,13 +8,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import useJob from "../../../hooks/useJob";
 import CompanyServices from "../../../services/CompanyServices";
 import JobServices from "../../../services/JobServices";
-import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateJobs = () => {
   const { jobId } = useParams();
+  const { handleEdit } = useJob();
   const [jobData, setJobData] = useState(null);
   const [allCompanies, setAllCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -51,6 +53,7 @@ const UpdateJobs = () => {
     setJobData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle array changes for requirements and skills
   const handleArrayChange = (e, name, index) => {
     const { value } = e.target;
     setJobData((prev) => {
@@ -60,6 +63,7 @@ const UpdateJobs = () => {
     });
   };
 
+  // Add and remove requirements and skills
   const handleAddRequirementOrSkill = (name) => {
     setJobData((prev) => ({ ...prev, [name]: [...prev[name], ""] }));
   };
@@ -71,6 +75,7 @@ const UpdateJobs = () => {
     });
   };
 
+  // Validate job data
   const validateJobData = () => {
     if (!jobData.title) {
       toast.error("Title is required.");
@@ -119,6 +124,8 @@ const UpdateJobs = () => {
     return true;
   };
 
+  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -130,7 +137,7 @@ const UpdateJobs = () => {
         company: selectedCompany,
       };
 
-      const response = await JobServices.updateJob(jobId, body);
+      const response = await handleEdit(jobId, body);
       if (response.success) {
         toast.success("Job updated successfully!");
         navigate("/dashboard/jobs");

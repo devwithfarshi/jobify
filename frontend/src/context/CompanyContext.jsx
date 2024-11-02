@@ -16,6 +16,7 @@ const CompanyProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
+  // fetch companies from the server
   const fetchCompanies = async (page = 1) => {
     setLoading(true);
     try {
@@ -38,6 +39,7 @@ const CompanyProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    // without login, no need to fetch companies
     if (!isAuthenticated) return;
     if (companies.length === 0) {
       fetchCompanies();
@@ -48,6 +50,7 @@ const CompanyProvider = ({ children }) => {
     fetchCompanies(newPage);
   };
 
+  // handle delete company
   const handleDelete = async (companyId) => {
     try {
       const res = await CompanyServices.deleteCompany(companyId);
@@ -67,6 +70,7 @@ const CompanyProvider = ({ children }) => {
     }
   };
 
+  // handle create company
   const handleCreate = async (formData) => {
     try {
       const response = await CompanyServices.createCompany(formData);
@@ -83,6 +87,7 @@ const CompanyProvider = ({ children }) => {
     }
   };
 
+  // handle update company
   const handleUpdate = async (companyId, formData) => {
     try {
       const response = await CompanyServices.updateCompany(companyId, formData);

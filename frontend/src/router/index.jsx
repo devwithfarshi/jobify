@@ -1,20 +1,21 @@
 import { createBrowserRouter } from "react-router-dom";
-import RootLayout from "../components/layouts/RootLayout";
-import Home from "../pages/Home";
-import Login from "../pages/Auth/Login";
-import Dashboard from "../pages/Dashboard/Dashboard";
 import RequireAuth from "../components/layouts/RequireAuth";
+import RootLayout from "../components/layouts/RootLayout";
 import AuthProvider from "../context/AuthContext";
-import Jobs from "../pages/Dashboard/job/Jobs";
-import CreateNewJobs from "../pages/Dashboard/job/CreateNewJobs";
-import UpdateJobs from "../pages/Dashboard/job/EditJob";
-import Company from "../pages/Dashboard/Company";
-import CreateNewCompany from "../pages/Dashboard/Company/CreateNewCompany";
-import CompanyEdit from "../pages/Dashboard/Company/CompanyEdit";
-import Users from "../pages/Dashboard/users/Users";
-import CreateNewUser from "../pages/Dashboard/users/CreateNewUser";
-import JobDetails from "../pages/JobDetails";
 import CompanyProvider from "../context/CompanyContext";
+import Login from "../pages/Auth/Login";
+import Dashboard from "../pages/Dashboard";
+import Company from "../pages/Dashboard/Company";
+import CompanyEdit from "../pages/Dashboard/Company/CompanyEdit";
+import CreateNewCompany from "../pages/Dashboard/Company/CreateNewCompany";
+import Jobs from "../pages/Dashboard/Job";
+import CreateNewJobs from "../pages/Dashboard/Job/CreateNewJobs";
+import UpdateJobs from "../pages/Dashboard/Job/EditJob";
+import CreateNewUser from "../pages/Dashboard/Users/CreateNewUser";
+import Users from "../pages/Dashboard/Users";
+import Home from "../pages/Home";
+import JobDetails from "../pages/JobDetails";
+import JobProvider from "../context/JobContext";
 
 export const router = createBrowserRouter([
   {
@@ -22,7 +23,9 @@ export const router = createBrowserRouter([
     element: (
       <AuthProvider>
         <CompanyProvider>
-          <RootLayout />
+          <JobProvider>
+            <RootLayout />
+          </JobProvider>
         </CompanyProvider>
       </AuthProvider>
     ),

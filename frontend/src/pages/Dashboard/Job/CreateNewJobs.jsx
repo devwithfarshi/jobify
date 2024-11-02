@@ -12,6 +12,8 @@ import {
 import { toast } from "sonner";
 import CompanyServices from "../../../services/CompanyServices";
 import JobServices from "../../../services/JobServices";
+import useJob from "../../../hooks/useJob";
+import { useNavigate } from "react-router-dom";
 
 const initialJobData = {
   title: "",
@@ -29,6 +31,9 @@ const initialJobData = {
 };
 
 const CreateNewJobs = () => {
+  const { handleCreate } = useJob();
+  const navigate = useNavigate();
+
   const [jobData, setJobData] = useState(initialJobData);
   const [allCompanies, setAllCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -118,6 +123,7 @@ const CreateNewJobs = () => {
     return true;
   };
 
+  // handle generate description from server with AI
   const handleGenerateDescription = async () => {
     if (
       !jobData.title ||
@@ -165,10 +171,11 @@ const CreateNewJobs = () => {
         company: selectedCompany,
       };
 
-      const response = await JobServices.createJob(body);
+      const response = await handleCreate(body);
       if (response.success) {
         toast.success("Job created successfully!");
         setJobData(initialJobData);
+        navigate("/dashboard/jobs");
       } else {
         throw new Error(response.message);
       }
