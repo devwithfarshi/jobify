@@ -11,13 +11,13 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import useJob from "../../../hooks/useJob";
 import CompanyServices from "../../../services/CompanyServices";
 import JobServices from "../../../services/JobServices";
 
 const UpdateJobs = () => {
   const { jobId } = useParams();
-  const { handleEdit } = useJob();
+  const dispatch = useDispatch();
+
   const [jobData, setJobData] = useState(null);
   const [allCompanies, setAllCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -137,9 +137,10 @@ const UpdateJobs = () => {
         company: selectedCompany,
       };
 
-      const response = await handleEdit(jobId, body);
+      const response = await JobServices.updateJob(jobId, body);
       if (response.success) {
         toast.success("Job updated successfully!");
+        dispatch(handleEdit(response.data));
         navigate("/dashboard/jobs");
       } else {
         throw new Error(response.message);

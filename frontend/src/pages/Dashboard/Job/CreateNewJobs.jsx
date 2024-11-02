@@ -12,8 +12,9 @@ import {
 import { toast } from "sonner";
 import CompanyServices from "../../../services/CompanyServices";
 import JobServices from "../../../services/JobServices";
-import useJob from "../../../hooks/useJob";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { handleCreate } from "../../../redux/features/JobSlice";
 
 const initialJobData = {
   title: "",
@@ -31,8 +32,8 @@ const initialJobData = {
 };
 
 const CreateNewJobs = () => {
-  const { handleCreate } = useJob();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [jobData, setJobData] = useState(initialJobData);
   const [allCompanies, setAllCompanies] = useState([]);
@@ -171,9 +172,10 @@ const CreateNewJobs = () => {
         company: selectedCompany,
       };
 
-      const response = await handleCreate(body);
+      const response = await JobServices.createJob(body);
       if (response.success) {
         toast.success("Job created successfully!");
+        dispatch(handleCreate(response.data));
         setJobData(initialJobData);
         navigate("/dashboard/jobs");
       } else {
@@ -181,7 +183,9 @@ const CreateNewJobs = () => {
       }
     } catch (error) {
       console.error("Failed to create job:", error);
-      toast.error(error.response.data.message || "Failed to create job");
+      toast.error(
+        error.response?.data.message || error?.message || "Failed to create job"
+      );
     }
   };
 

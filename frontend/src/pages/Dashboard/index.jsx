@@ -6,12 +6,12 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import useCompany from "../../hooks/useCompany";
-import useJob from "../../hooks/useJob";
 
 const Dashboard = () => {
   const { companies } = useCompany();
-  const { jobs } = useJob();
+  const { jobs } = useSelector((state) => state.jobs);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

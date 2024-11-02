@@ -12,7 +12,10 @@ import {
 } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
-import useJob from "../../hooks/useJob";
+import { useDispatch } from "react-redux";
+import { handleJobDelete } from "../../redux/features/JobSlice";
+import JobServices from "../../services/JobServices";
+import { toast } from "sonner";
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: "box-shadow 0.3s ease-in-out",
   "&:hover": {
@@ -23,7 +26,20 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 const JobCard = ({ job }) => {
   const { isAuthenticated } = useAuth();
-  const { handleJobDelete } = useJob();
+  const dispatch = useDispatch();
+  const handleJobDeleteFun = async (id) => {
+    try {
+      const response = await JobServices.deleteJob(id);
+      if (response.success) {
+        dispatch(handleJobDelete(id));
+        toast.success("Job deleted successfully");
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data.message || "Failed to delete job");
+    }
+  };
 
   return (
     <Grid item xs={12} sm={6} md={4} key={job._id}>
@@ -85,7 +101,7 @@ const JobCard = ({ job }) => {
                 <Link to={`/dashboard/jobs/edit/${job._id}`}>Edit</Link>
               </Button>
               <Button
-                onClick={() => handleJobDelete(job._id)}
+                onClick={() => handleJobDeleteFun(job._id)}
                 variant="contained"
                 color="error"
                 fullWidth
