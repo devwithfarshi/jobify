@@ -6,9 +6,13 @@ import {
   CardContent,
   CircularProgress,
   Container,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Modal,
+  Select,
   Snackbar,
   TextField,
   Typography,
@@ -248,15 +252,14 @@ const Users = () => {
               margin="normal"
               required
             />
-            <TextField
-              fullWidth
-              label="Role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              margin="normal"
-              required
-            />
+
+            <FormControl fullWidth margin="normal" required>
+              <InputLabel>Role</InputLabel>
+              <Select name="role" value={formData.role} onChange={handleChange}>
+                <MenuItem value="super-admin">Super Admin</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </Select>
+            </FormControl>
             <Box display="flex" justifyContent="flex-end" mt={2}>
               <Button type="submit" variant="contained" color="primary">
                 {currentUser ? "Update User" : "Create User"}

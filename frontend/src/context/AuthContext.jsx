@@ -8,10 +8,13 @@ const AuthProvider = ({ children }) => {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+
+  // load user if token is valid
   const loadUser = (user) => {
     setUser(user);
     setIsAuthenticated(true);
   };
+  // logout
   const logOut = () => {
     setUser(null);
     setIsAuthenticated(false);

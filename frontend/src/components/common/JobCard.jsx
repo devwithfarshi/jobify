@@ -27,13 +27,21 @@ const JobCard = ({ job, onDelete }) => {
     <Grid item xs={12} sm={6} md={4} key={job._id}>
       <StyledCard>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography
+            variant="h6"
+            gutterBottom
+            component={Link}
+            to={`/job-details/${job._id}`}
+          >
             {job.title}
           </Typography>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>
             {job.company?.name || "N/A"}
           </Typography>
-          <Stack direction="row" spacing={1} sx={{ my: 2 }}>
+          <Stack
+            direction="row"
+            sx={{ my: 2, flexWrap: "wrap", rowGap: 1, columnGap: 1 }}
+          >
             <Chip
               icon={<LocationOn />}
               label={job.location}

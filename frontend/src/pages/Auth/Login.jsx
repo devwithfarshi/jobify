@@ -50,7 +50,6 @@ const Login = () => {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -59,7 +58,6 @@ const Login = () => {
     }
   };
 
-  // Validate form before submission
   const validateForm = () => {
     const newErrors = {
       email: "",

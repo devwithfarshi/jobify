@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -11,14 +11,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import CompanyServices from "../../../services/CompanyServices";
+import useCompany from "../../../hooks/useCompany";
+import { useNavigate } from "react-router-dom";
 
-const CompanyEdit = () => {
-  const { companyId } = useParams();
-  const navigate = useNavigate();
-
+const CreateNewCompany = () => {
+  const { handleCreate } = useCompany();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -26,29 +23,11 @@ const CompanyEdit = () => {
     location: "",
   });
   const [logo, setLogo] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    const fetchCompanyDetails = async () => {
-      try {
-        const response = await CompanyServices.getCompany(companyId);
-        setFormData(response.data);
-      } catch (error) {
-        console.error("Failed to fetch company details:", error);
-        setSnackbarMessage(
-          "Failed to fetch company details. Please try again."
-        );
-        setSnackbarOpen(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCompanyDetails();
-  }, [companyId]);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -62,9 +41,13 @@ const CompanyEdit = () => {
   const validate = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = "Company name is required.";
+    if (!formData.description)
+      newErrors.description = "Description is required.";
+    if (!formData.website) newErrors.website = "Website is required.";
     if (formData.website && !/^https?:\/\/.+\..+/.test(formData.website)) {
       newErrors.website = "Invalid website URL.";
     }
+    if (!formData.location) newErrors.location = "Location is required.";
     return newErrors;
   };
 
@@ -85,32 +68,37 @@ const CompanyEdit = () => {
 
     setLoading(true);
     try {
-      const response = await CompanyServices.updateCompany(
-        companyId,
-        formDataToSend
-      );
-      setSnackbarMessage(response.data.message);
-      navigate(-1);
+      const response = await handleCreate(formDataToSend);
+      if (response.success) {
+        setSnackbarMessage("Company created successfully");
+        navigate("/dashboard/companies");
+        setFormData({
+          name: "",
+          description: "",
+          website: "",
+          location: "",
+        });
+        setLogo(null);
+      } else {
+        throw new Error(response.message || "An error occurred.");
+      }
     } catch (error) {
-      setSnackbarMessage("Failed to update company. Please try again.");
+      console.error("Company creation error:", error);
+      setSnackbarMessage(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to create company. Please try again."
+      );
     } finally {
       setLoading(false);
       setSnackbarOpen(true);
     }
   };
 
-  if (loading) {
-    return (
-      <Container maxWidth="sm">
-        <CircularProgress />
-      </Container>
-    );
-  }
-
   return (
     <Container maxWidth="sm">
       <Typography variant="h4" component="h1" gutterBottom>
-        Edit Company
+        Create New Company
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
@@ -119,7 +107,7 @@ const CompanyEdit = () => {
               fullWidth
               label="Company Name"
               name="name"
-              value={formData.name || ""}
+              value={formData.name}
               onChange={handleChange}
               error={Boolean(errors.name)}
               helperText={errors.name}
@@ -132,11 +120,13 @@ const CompanyEdit = () => {
               fullWidth
               label="Description"
               name="description"
-              value={formData.description || ""}
+              value={formData.description}
               onChange={handleChange}
               variant="outlined"
               multiline
               rows={4}
+              error={Boolean(errors.description)}
+              helperText={errors.description}
             />
           </Grid>
           <Grid item xs={12}>
@@ -144,7 +134,7 @@ const CompanyEdit = () => {
               fullWidth
               label="Website"
               name="website"
-              value={formData.website || ""}
+              value={formData.website}
               onChange={handleChange}
               error={Boolean(errors.website)}
               helperText={errors.website}
@@ -156,8 +146,9 @@ const CompanyEdit = () => {
               fullWidth
               label="Location"
               name="location"
-              value={formData.location || ""}
+              value={formData.location}
               onChange={handleChange}
+              error={Boolean(errors.location)}
               variant="outlined"
             />
           </Grid>
@@ -193,7 +184,7 @@ const CompanyEdit = () => {
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              "Update Company"
+              "Create Company"
             )}
           </Button>
         </Box>
@@ -208,4 +199,4 @@ const CompanyEdit = () => {
   );
 };
 
-export default CompanyEdit;
+export default CreateNewCompany;

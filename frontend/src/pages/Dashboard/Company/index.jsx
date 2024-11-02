@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Delete, Edit } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -10,70 +10,12 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
-import axios from "axios";
-import CompanyServices from "../../../services/CompanyServices";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import useCompany from "../../../hooks/useCompany";
 
 const CompanyManager = () => {
-  const [companies, setCompanies] = useState([]);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    totalPages: 1,
-    totalDocs: 0,
-    limit: 10,
-  });
-  const [loading, setLoading] = useState(true);
-
-  const fetchCompanies = async (page = 1) => {
-    setLoading(true);
-    try {
-      const response = await CompanyServices.getAllCompanies();
-      const { docs, totalPages, totalDocs } = response.data;
-      setCompanies(docs);
-      setPagination((prev) => ({
-        ...prev,
-        page,
-        totalPages,
-        totalDocs,
-      }));
-    } catch (error) {
-      console.error("Failed to fetch companies:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
-  const handlePageChange = (event, newPage) => {
-    fetchCompanies(newPage);
-  };
-
-  const handleEdit = (companyId) => {
-    // Handle edit functionality here
-    console.log("Edit company:", companyId);
-  };
-
-  const handleDelete = async (companyId) => {
-    try {
-      const res = await CompanyServices.deleteCompany(companyId);
-      if (res.success) {
-        setCompanies((prevCompanies) =>
-          prevCompanies.filter((company) => company._id !== companyId)
-        );
-
-        toast.success("Company deleted successfully");
-      }
-    } catch (error) {
-      console.error("Failed to delete company:", error);
-      toast.error("Failed to delete company. Please try again.");
-    }
-  };
-
+  const { companies, pagination, loading, handlePageChange, handleDelete } =
+    useCompany();
   return (
     <Container maxWidth="md">
       <Box
