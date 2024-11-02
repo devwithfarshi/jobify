@@ -1,8 +1,8 @@
 import Cookie from "js-cookie";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
 import { useEffect } from "react";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import useAuth from "../../hooks/useAuth";
 import AuthService from "../../services/AuthService";
 const RequireAuth = () => {
   const location = useLocation();

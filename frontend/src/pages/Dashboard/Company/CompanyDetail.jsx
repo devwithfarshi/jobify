@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import CompanyServices from "../../../services/CompanyServices";
-import JobServices from "../../../services/JobServices";
-import JobCard from "../../../components/common/JobCard";
 import {
-  CircularProgress,
-  Typography,
+  Avatar,
   Box,
+  CircularProgress,
+  Container,
+  Divider,
   Grid,
   Paper,
-  Avatar,
-  Divider,
-  Container,
+  Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import JobCard from "../../../components/common/JobCard";
+import CompanyServices from "../../../services/CompanyServices";
+import JobServices from "../../../services/JobServices";
 
 const CompanyDetail = () => {
   const { companyId } = useParams();

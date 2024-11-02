@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import RequireAuth from "../components/layouts/RequireAuth";
 import RootLayout from "../components/layouts/RootLayout";
 import AuthProvider from "../context/AuthContext";
+import CompanyProvider from "../context/CompanyContext";
 import Login from "../pages/Auth/Login";
 import Dashboard from "../pages/Dashboard";
 import Company from "../pages/Dashboard/Company";
@@ -17,7 +18,6 @@ import CreateNewUser from "../pages/Dashboard/Users/CreateNewUser";
 import Home from "../pages/Home";
 import JobDetails from "../pages/JobDetails";
 import store from "../redux/store";
-import CompanyProvider from "../context/CompanyContext";
 export const router = createBrowserRouter([
   {
     path: "/",

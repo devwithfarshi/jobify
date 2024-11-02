@@ -1,7 +1,7 @@
 import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 import Header from "../shared/Header";
 import Sidebar from "../shared/Sidebar";
-import useAuth from "../../hooks/useAuth";
 
 const RootLayout = () => {
   const { isAuthenticated } = useAuth();

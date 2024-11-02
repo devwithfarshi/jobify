@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
-import JobCard from "./JobCard";
 import { useEffect } from "react";
 import {
   clearFilters,
@@ -29,6 +28,7 @@ import {
   setFilters,
   setPagination,
 } from "../../redux/features/JobSlice";
+import JobCard from "./JobCard";
 
 const JobListing = ({ fromPage }) => {
   const dispatch = useDispatch();

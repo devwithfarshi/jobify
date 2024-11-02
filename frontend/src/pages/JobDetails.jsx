@@ -1,20 +1,19 @@
-import { useParams } from "react-router-dom";
-import JobServices from "../services/JobServices";
-import { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Paper,
-  Button,
-  Grid,
-  Divider,
-} from "@mui/material";
-import WorkIcon from "@mui/icons-material/Work";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import BusinessIcon from "@mui/icons-material/Business";
 import LinkIcon from "@mui/icons-material/Link";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { marked } from "marked";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import JobServices from "../services/JobServices";
 
 const JobDetails = () => {
   const { jobId } = useParams();

@@ -1,4 +1,4 @@
-import { BusinessCenter, Group, LocationOn, School } from "@mui/icons-material";
+import { BusinessCenter, LocationOn, School } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -10,12 +10,12 @@ import {
   styled,
   Typography,
 } from "@mui/material";
-import useAuth from "../../hooks/useAuth";
-import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import useAuth from "../../hooks/useAuth";
 import { handleJobDelete } from "../../redux/features/JobSlice";
 import JobServices from "../../services/JobServices";
-import { toast } from "sonner";
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: "box-shadow 0.3s ease-in-out",
   "&:hover": {
