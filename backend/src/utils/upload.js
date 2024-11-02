@@ -1,5 +1,6 @@
 const cloudinary = require("../config/cloudinary.js");
 const fs = require("fs");
+
 /**
  * Uploads a file to Cloudinary.
  * @param {string} filePath - The path to the file.
@@ -7,14 +8,22 @@ const fs = require("fs");
  * @returns {Promise<Object>} The promise object that represents the Cloudinary response.
  */
 const uploadFile = (filePath, options = {}) => {
-  const result = cloudinary.uploader.upload(filePath, options);
-  return result
+  return cloudinary.uploader
+    .upload(filePath, options)
     .then((response) => {
-      fs.unlinkSync(filePath);
+      console.log(`Uploaded file: ${filePath}`);
+      fs.unlink(filePath, (err) => {
+        if (err) console.error(`Failed to delete file: ${filePath}`, err);
+        else console.log(`Deleted file: ${filePath}`);
+      });
       return response;
     })
     .catch((error) => {
-      fs.unlinkSync(filePath);
+      console.error(`Upload failed for file: ${filePath}`, error);
+      fs.unlink(filePath, (err) => {
+        if (err)
+          console.error(`Failed to delete file after error: ${filePath}`, err);
+      });
       throw error;
     });
 };

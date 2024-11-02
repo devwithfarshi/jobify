@@ -68,12 +68,12 @@ const createJob = async (req, res, next) => {
 
       const response = await uploadMultipleFiles(req.files);
       files = response.map((file) => ({
-        type: file.format,
-        url: file.secure_url,
+        type: file.format.toString(),
+        url: file.secure_url.toString(),
       }));
       req.body.files = files;
     }
-
+    console.log(req.body);
     const companyExists = await companyServices.getCompany(req.body.company);
     if (!companyExists) {
       return res

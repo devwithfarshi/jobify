@@ -24,7 +24,6 @@ router.get("/get/industries", jobController.getAllIndustry);
 router.use([authenticate, authorizeRole([superAdmin, admin])]);
 router.post(
   "/",
-
   upload.array("files", 5),
   validate(JobValidation.jobCreateValidation),
   jobController.createJob

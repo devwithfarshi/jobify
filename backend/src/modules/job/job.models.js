@@ -37,8 +37,14 @@ const jobSchema = new mongoose.Schema(
     skills: [String],
     files: [
       {
-        type: String,
-        url: String,
+        type: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
       },
     ],
   },
