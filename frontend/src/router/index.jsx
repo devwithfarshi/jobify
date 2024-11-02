@@ -16,6 +16,7 @@ import Users from "../pages/Dashboard/Users";
 import Home from "../pages/Home";
 import JobDetails from "../pages/JobDetails";
 import JobProvider from "../context/JobContext";
+import CompanyDetail from "../pages/Dashboard/Company/CompanyDetail";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
           {
             path: "companies",
             element: <Company />,
+          },
+          {
+            path: "companies/:companyId",
+            element: <CompanyDetail />,
           },
           {
             path: "companies/new",

@@ -59,7 +59,13 @@ const CompanyManager = () => {
                       src={company.logo}
                       alt={company.name}
                     />
-                    <Typography variant="h6">{company.name}</Typography>
+                    <Typography
+                      variant="h6"
+                      component={Link}
+                      to={`/dashboard/companies/${company._id}`}
+                    >
+                      {company.name}
+                    </Typography>
                     <Typography
                       variant="body2"
                       maxWidth={555}

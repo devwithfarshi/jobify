@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
+import useJob from "../../hooks/useJob";
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: "box-shadow 0.3s ease-in-out",
   "&:hover": {
@@ -20,8 +21,9 @@ const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
   padding: theme.spacing(2),
 }));
-const JobCard = ({ job, onDelete }) => {
+const JobCard = ({ job }) => {
   const { isAuthenticated } = useAuth();
+  const { handleJobDelete } = useJob();
 
   return (
     <Grid item xs={12} sm={6} md={4} key={job._id}>
@@ -83,7 +85,7 @@ const JobCard = ({ job, onDelete }) => {
                 <Link to={`/dashboard/jobs/edit/${job._id}`}>Edit</Link>
               </Button>
               <Button
-                onClick={() => onDelete(job._id)}
+                onClick={() => handleJobDelete(job._id)}
                 variant="contained"
                 color="error"
                 fullWidth
