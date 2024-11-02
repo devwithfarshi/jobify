@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Grid,
+  IconButton,
   MenuItem,
   Paper,
   TextField,
@@ -15,6 +16,7 @@ import { toast } from "sonner";
 import { handleCreate } from "../../../redux/features/JobSlice";
 import CompanyServices from "../../../services/CompanyServices";
 import JobServices from "../../../services/JobServices";
+import { PictureAsPdf } from "@mui/icons-material";
 
 const initialJobData = {
   title: "",
@@ -29,6 +31,7 @@ const initialJobData = {
   industry: "",
   remote: false,
   skills: [""],
+  files: [],
 };
 
 const CreateNewJobs = () => {
@@ -51,11 +54,6 @@ const CreateNewJobs = () => {
     })();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setJobData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleArrayChange = (e, name, index) => {
     const { value } = e.target;
     setJobData((prev) => {
@@ -63,10 +61,6 @@ const CreateNewJobs = () => {
       updatedArray[index] = value;
       return { ...prev, [name]: updatedArray };
     });
-  };
-
-  const handleAddRequirementOrSkill = (name) => {
-    setJobData((prev) => ({ ...prev, [name]: [...prev[name], ""] }));
   };
 
   const handleRemoveRequirementOrSkill = (name, index) => {
@@ -167,12 +161,23 @@ const CreateNewJobs = () => {
     if (!validateJobData()) return;
 
     try {
+      const formData = new FormData();
+
       const body = {
         ...jobData,
         company: selectedCompany,
       };
+      for (const key in body) {
+        if (Array.isArray(body[key])) {
+          body[key].forEach((item) => {
+            formData.append(key, item);
+          });
+        } else {
+          formData.append(key, body[key]);
+        }
+      }
 
-      const response = await JobServices.createJob(body);
+      const response = await JobServices.createJob(formData);
       if (response.success) {
         toast.success("Job created successfully!");
         dispatch(handleCreate(response.data));
@@ -187,6 +192,42 @@ const CreateNewJobs = () => {
         error.response?.data.message || error?.message || "Failed to create job"
       );
     }
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "files") {
+      handleFileUpload(e);
+    } else {
+      setJobData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const filesArray = Array.from(e.target.files);
+    const validFiles = filesArray.filter(
+      (file) => file.type === "application/pdf"
+    );
+
+    if (validFiles.length + jobData.files.length > 5) {
+      toast.error("Maximum 5 files allowed.");
+      return;
+    }
+
+    setJobData((prev) => ({
+      ...prev,
+      files: [...prev.files, ...validFiles],
+    }));
+  };
+
+  const handleAddRequirementOrSkill = (name) => {
+    setJobData((prev) => ({ ...prev, [name]: [...prev[name], ""] }));
+  };
+
+  const handleRemoveFile = (index) => {
+    setJobData((prev) => {
+      const updatedFiles = prev.files.filter((_, i) => i !== index);
+      return { ...prev, files: updatedFiles };
+    });
   };
 
   return (
@@ -441,8 +482,41 @@ const CreateNewJobs = () => {
                 }}
               />
             </Grid>
+            {/* files */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">Files (Max 5 files)</Typography>
+              <input
+                accept=".pdf"
+                multiple
+                type="file"
+                onChange={handleFileUpload}
+                style={{ display: "none" }}
+                id="file-upload"
+              />
+              <label htmlFor="file-upload">
+                <Button
+                  component="span"
+                  variant="outlined"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  disabled={jobData.files.length >= 5}
+                >
+                  Upload Files
+                </Button>
+              </label>
 
-            {/* Submit */}
+              {jobData.files.map((file, index) => (
+                <Box key={index} display="flex" alignItems="center" mt={1}>
+                  <Typography variant="body2" component="span" sx={{ mr: 1 }}>
+                    {file.name}
+                  </Typography>
+                  <IconButton onClick={() => handleRemoveFile(index)}>
+                    Remove
+                  </IconButton>
+                </Box>
+              ))}
+            </Grid>
+
             <Grid item xs={12}>
               <Button
                 type="submit"
