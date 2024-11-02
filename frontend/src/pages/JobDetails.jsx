@@ -8,6 +8,7 @@ import {
   Divider,
   Grid,
   Paper,
+  Stack,
   Typography,
 } from "@mui/material";
 import { marked } from "marked";
@@ -96,6 +97,30 @@ const JobDetails = () => {
             "& li": { mb: 1, color: "text.secondary" },
           }}
         />
+
+        {job.files?.length > 0 && (
+          <Box mt={3}>
+            <Typography variant="h6" gutterBottom>
+              Attachments related to this job:
+            </Typography>
+            <Stack direction="row" gap={2}>
+              {job.files.map((file, index) => (
+                <Button
+                  key={index}
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<LinkIcon />}
+                  href={file.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ mb: 1 }}
+                >
+                  View
+                </Button>
+              ))}
+            </Stack>
+          </Box>
+        )}
 
         {job.applyLink && (
           <Box mt={3} textAlign="center">
