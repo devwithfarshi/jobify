@@ -5,6 +5,7 @@ const { StatusCodes } = require("http-status-codes");
 const ApiError = require("@/utils/apiError");
 const redis = require("@/config/redis");
 const { generateJobDescriptionWithOpenAi } = require("@/utils/openAi");
+const { uploadMultipleFiles } = require("@/utils/upload");
 
 // Utility function for setting Redis cache
 const setRedisCache = async (key, value, expiration = 300) => {
@@ -39,6 +40,40 @@ const clearCachePattern = async (pattern) => {
 
 const createJob = async (req, res, next) => {
   try {
+    let files = [];
+    if (req.files) {
+      if (req.files.length > 5) {
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json(
+            new ApiError(
+              StatusCodes.BAD_REQUEST,
+              "You can only upload a maximum of 5 files"
+            )
+          );
+      }
+
+      req.files.forEach((file) => {
+        if (file.mimetype !== "application/pdf") {
+          return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json(
+              new ApiError(
+                StatusCodes.BAD_REQUEST,
+                "Only PDF files are allowed"
+              )
+            );
+        }
+      });
+
+      const response = await uploadMultipleFiles(req.files);
+      files = response.map((file) => ({
+        type: file.format.toString(),
+        url: file.secure_url.toString(),
+      }));
+      req.body.files = files;
+    }
+    console.log(req.body);
     const companyExists = await companyServices.getCompany(req.body.company);
     if (!companyExists) {
       return res

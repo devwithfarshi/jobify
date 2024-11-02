@@ -35,6 +35,18 @@ const jobSchema = new mongoose.Schema(
       default: false,
     },
     skills: [String],
+    files: [
+      {
+        type: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

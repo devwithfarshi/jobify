@@ -3,6 +3,7 @@
 const { StatusCodes } = require("http-status-codes");
 const ApiError = require("../utils/apiError");
 const { verifyAccessToken } = require("../utils/jwtToken");
+const { userServices } = require("@/modules/users");
 
 function extractToken(req) {
   let token = null;
@@ -21,7 +22,7 @@ function extractToken(req) {
   return token;
 }
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const tokenRaw = extractToken(req);
   if (!tokenRaw) {
     return next(
@@ -31,7 +32,13 @@ const authenticate = (req, res, next) => {
 
   try {
     const decoded = verifyAccessToken(tokenRaw);
-    req.user = decoded;
+    const userExits = await userServices.getUserById(decoded.id);
+    if (!userExits) {
+      return next(
+        new ApiError(StatusCodes.UNAUTHORIZED, "Invalid or expire token")
+      );
+    }
+    req.user = userExits;
     next();
   } catch (err) {
     return next(
