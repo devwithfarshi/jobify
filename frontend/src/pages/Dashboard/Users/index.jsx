@@ -20,8 +20,8 @@ import {
 import Pagination from "@mui/material/Pagination";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import UserService from "../../../services/UserServices";
 import useAuth from "../../../hooks/useAuth";
+import UserService from "../../../services/UserServices";
 const Users = () => {
   const { user: loggedInUser } = useAuth();
   const [users, setUsers] = useState([]);

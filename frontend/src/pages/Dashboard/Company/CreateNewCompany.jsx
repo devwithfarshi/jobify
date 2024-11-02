@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { PhotoCamera } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Grid,
-  TextField,
-  Typography,
   IconButton,
   Snackbar,
-  CircularProgress,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { PhotoCamera } from "@mui/icons-material";
-import useCompany from "../../../hooks/useCompany";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useCompany from "../../../hooks/useCompany";
 
 const CreateNewCompany = () => {
   const { handleCreate } = useCompany();

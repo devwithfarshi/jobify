@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import LogIn from "@mui/icons-material/Login";
+import Eye from "@mui/icons-material/RemoveRedEye";
+import EyeOff from "@mui/icons-material/VisibilityOff";
 import {
   Box,
   Button,
@@ -13,12 +15,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Eye from "@mui/icons-material/RemoveRedEye";
-import EyeOff from "@mui/icons-material/VisibilityOff";
-import LogIn from "@mui/icons-material/Login";
+import Cookie from "js-cookie";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService";
-import Cookie from "js-cookie";
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);

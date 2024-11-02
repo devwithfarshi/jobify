@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
-import CompanyServices from "../services/CompanyServices";
 import { toast } from "sonner";
 import useAuth from "../hooks/useAuth";
+import CompanyServices from "../services/CompanyServices";
 
 export const CompanyContext = createContext();
 

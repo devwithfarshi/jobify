@@ -4,6 +4,8 @@ const JobServices = {
   getAllJobs: async (query = null) =>
     requests.get(query ? `/jobs?${query}` : "/jobs"),
   getJob: async (id) => requests.get(`/jobs/${id}`),
+  getJobsByCompany: async (companyId) =>
+    requests.get(`/jobs/company/${companyId}`),
   createJob: async (body) => requests.post("/jobs", body),
   updateJob: async (id, body) => requests.put(`/jobs/${id}`, body),
   deleteJob: async (id) => requests.delete(`/jobs/${id}`),

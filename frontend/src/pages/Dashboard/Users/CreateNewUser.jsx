@@ -1,18 +1,17 @@
-import { useState } from "react";
 import {
   Box,
   Button,
-  TextField,
-  Typography,
-  Select,
-  MenuItem,
+  Container,
   FormControl,
   InputLabel,
-  Container,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
-import UserService from "../../../services/UserServices";
-import AuthService from "../../../services/AuthService";
+import { useState } from "react";
 import { toast } from "sonner";
+import AuthService from "../../../services/AuthService";
 
 const CreateNewUser = ({ onCreateUser }) => {
   const [formData, setFormData] = useState({

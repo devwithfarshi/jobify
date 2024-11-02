@@ -17,21 +17,31 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import useJob from "../../hooks/useJob";
+import { useDispatch, useSelector } from "react-redux";
+
+import { useEffect } from "react";
+import {
+  clearFilters,
+  fetchFilterOptions,
+  fetchJobs,
+  handleJobDelete,
+  setFilters,
+  setPagination,
+} from "../../redux/features/JobSlice";
 import JobCard from "./JobCard";
 
 const JobListing = ({ fromPage }) => {
-  const {
-    jobs,
-    loading,
-    filters,
-    pagination,
-    filterOptions,
-    handleFilterChange,
-    handlePageChange,
-    clearFilters,
-    handleJobDelete,
-  } = useJob();
+  const dispatch = useDispatch();
+  const { jobs, loading, filters, pagination, filterOptions } = useSelector(
+    (state) => state.jobs
+  );
+
+  useEffect(() => {
+    dispatch(fetchJobs({ filters, page: pagination.page }));
+  }, [dispatch, filters, pagination.page]);
+  useEffect(() => {
+    dispatch(fetchFilterOptions());
+  }, []);
 
   const renderFilterFields = () => (
     <Grid container spacing={2} alignItems="center">
@@ -40,7 +50,9 @@ const JobListing = ({ fromPage }) => {
           fullWidth
           name="title"
           value={filters.title}
-          onChange={(e) => handleFilterChange("title", e.target.value)}
+          onChange={(e) =>
+            dispatch(setFilters({ name: "title", value: e.target.value }))
+          }
           placeholder="Job Title or Keywords"
           InputProps={{
             startAdornment: <Search sx={{ mr: 1, color: "text.secondary" }} />,
@@ -79,7 +91,9 @@ const JobListing = ({ fromPage }) => {
             fullWidth
             name={name}
             value={filters[name]}
-            onChange={(e) => handleFilterChange(name, e.target.value)}
+            onChange={(e) =>
+              dispatch(setFilters({ name, value: e.target.value }))
+            }
             label={label}
             InputProps={{ startAdornment: icon }}
           >
@@ -97,7 +111,7 @@ const JobListing = ({ fromPage }) => {
           variant="outlined"
           fullWidth
           size="large"
-          onClick={clearFilters}
+          onClick={() => dispatch(clearFilters())}
           sx={{ mt: 2 }}
         >
           Clear Filters
@@ -131,7 +145,7 @@ const JobListing = ({ fromPage }) => {
           <Box display="flex" justifyContent="center" mt={4}>
             <CircularProgress />
           </Box>
-        ) : jobs.length === 0 ? (
+        ) : jobs?.length === 0 ? (
           <Box display="flex" justifyContent="center" mt={4}>
             <Typography variant="h6" color="text.secondary">
               No jobs found. Please adjust your search criteria.
@@ -140,8 +154,12 @@ const JobListing = ({ fromPage }) => {
         ) : (
           <>
             <Grid container spacing={2} mt={4}>
-              {jobs.map((job) => (
-                <JobCard key={job._id} job={job} onDelete={handleJobDelete} />
+              {jobs?.map((job) => (
+                <JobCard
+                  key={job._id}
+                  job={job}
+                  onDelete={() => dispatch(handleJobDelete(job._id))}
+                />
               ))}
             </Grid>
 
@@ -150,7 +168,9 @@ const JobListing = ({ fromPage }) => {
                 <Pagination
                   count={pagination.totalPages}
                   page={pagination.page}
-                  onChange={(e, page) => handlePageChange(page)}
+                  onChange={(e, page) => {
+                    dispatch(setPagination(page));
+                  }}
                   color="primary"
                   variant="outlined"
                   disabled={loading}
